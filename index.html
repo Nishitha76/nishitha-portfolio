@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Living Puzzle World | Nishitha — MCA Portfolio</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            midnight: '#050714',
+            surface: 'rgba(10, 15, 30, 0.75)',
+            cobalt: '#2563EB',
+            violet: '#8B5CF6',
+            gold: '#F59E0B',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js and OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
+  <style>
+    /* Custom Scrollbar & Aesthetics */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050714;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3b82f6;
+      border-radius: 9999px;
+    }
+    .glass-panel {
+      background: rgba(8, 12, 28, 0.78);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-gold {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .glow-gold {
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+    }
+    .glow-violet {
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+    }
+    .glow-cobalt {
+      box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+    }
+    .text-glow {
+      text-shadow: 0 0 16px rgba(139, 92, 246, 0.6);
+    }
+    /* Radial atmosphere mask */
+    .radial-vignette {
+      background: radial-gradient(circle at center, transparent 35%, rgba(5, 7, 20, 0.88) 100%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-midnight text-slate-100 font-sans overflow-hidden select-none w-screen h-screen">
+
+  <!-- 3D Canvas Mount -->
+  <div id="webgl-container" class="absolute inset-0 z-0 cursor-grab active:cursor-grabbing"></div>
+
+  <!-- Radial Atmosphere Overlay -->
+  <div class="radial-vignette absolute inset-0 z-10 pointer-events-none"></div>
+
+  <!-- TOP HUD: Brand, Progress, Actions -->
+  <header class="absolute top-0 left-0 right-0 z-20 px-6 py-5 flex items-center justify-between pointer-events-none">
+    <!-- Brand -->
+    <div class="pointer-events-auto flex items-center gap-3">
+      <div class="relative w-11 h-11 rounded-xl bg-gradient-to-tr from-violet-600 via-cobalt-500 to-amber-400 p-[1.5px] shadow-lg shadow-violet-900/40 shrink-0">
+        <div class="w-full h-full bg-midnight rounded-[10px] overflow-hidden flex items-center justify-center">
+          <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0f172a/f59e0b?text=N';">
+        </div>
+        <span class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-midnight rounded-full" title="Active"></span>
+      </div>
+      <div>
+        <h1 class="font-cinzel text-lg tracking-wider text-slate-100 font-bold flex items-center gap-2">
+          THE LIVING PUZZLE <span class="text-xs px-2 py-0.5 rounded-full bg-violet-950/80 text-violet-300 border border-violet-800/40">MCA '25</span>
+        </h1>
+        <p class="text-xs text-slate-400 tracking-widest uppercase font-mono">Nishitha • Software Developer</p>
+      </div>
+    </div>
+
+    <!-- Center: Progress Track -->
+    <div class="pointer-events-auto hidden md:flex items-center gap-4 glass-panel px-5 py-2.5 rounded-full shadow-2xl">
+      <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
+        <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+        <span>DISCOVERY:</span>
+        <span id="progress-text" class="text-amber-400 font-bold font-mono">0 / 8 PIECES</span>
+      </div>
+      <div class="w-32 h-2 bg-slate-800 rounded-full overflow-hidden p-[1px] border border-slate-700">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-cobalt-500 via-violet-500 to-amber-400 rounded-full transition-all duration-700 w-0"></div>
+      </div>
+      <button id="btn-assemble-quick" onclick="assembleWholePuzzle()" title="Assemble Entire Sculpture" class="text-[11px] px-2.5 py-1 rounded-md bg-violet-600/30 hover:bg-violet-600 text-violet-200 border border-violet-500/30 transition-all font-mono">
+        Assemble All
+      </button>
+    </div>
+
+    <!-- Right Controls: Audio, Orbit, Tour, Directory, Resume -->
+    <div class="pointer-events-auto flex items-center gap-2.5">
+      <!-- Orbit Auto-Rotate Toggle Button -->
+      <button id="btn-orbit-toggle" onclick="toggleOrbitMode()" title="Toggle Auto-Orbit" class="flex items-center gap-1.5 px-3 py-2 rounded-xl glass-panel text-xs text-amber-300 border-amber-500/40 bg-amber-500/10 shadow-lg shadow-amber-500/10 transition">
+        <i id="orbit-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 animate-spin"></i>
+        <span id="orbit-status-label" class="hidden sm:inline font-mono">Orbiting</span>
+      </button>
+
+      <!-- Sound Synthesizer Toggle -->
+      <button id="btn-audio" onclick="toggleAudio()" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-violet-500/50 transition">
+        <i id="audio-icon" data-lucide="volume-x" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Guided Tour Toggle -->
+      <button id="btn-tour" onclick="startGuidedTour()" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl glass-panel text-xs text-slate-200 hover:border-amber-400/50 hover:text-amber-300 transition">
+        <i data-lucide="play" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span>Guided Tour</span>
+      </button>
+
+      <!-- Exhibition Directory Drawer Button -->
+      <button onclick="toggleDirectory()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl glass-panel text-xs text-slate-200 hover:border-violet-500/50 hover:text-white transition">
+        <i data-lucide="layers" class="w-3.5 h-3.5 text-violet-400"></i>
+        <span class="hidden sm:inline">Exhibits</span>
+      </button>
+
+      <!-- Resume Button -->
+      <button onclick="openExhibit('resume')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cobalt to-violet hover:brightness-110 text-white text-xs font-semibold shadow-lg shadow-violet-900/30 transition">
+        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+        <span>Resume</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- INTRO HERO OVERLAY (Fades on start) -->
+  <div id="intro-hero" class="absolute inset-0 z-30 flex items-center justify-center p-6 bg-midnight/80 backdrop-blur-md transition-opacity duration-1000">
+    <div class="max-w-2xl text-center space-y-6">
+      
+      <!-- Hero Photo Avatar Preview -->
+      <div class="flex justify-center">
+        <div class="relative w-24 h-24 rounded-2xl p-1 bg-gradient-to-tr from-amber-400 via-violet-500 to-cobalt-500 shadow-2xl glow-violet">
+          <div class="w-full h-full rounded-[14px] overflow-hidden bg-midnight">
+            <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/200x200/0f172a/f59e0b?text=Nishitha';">
+          </div>
+          <span class="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-amber-500 text-midnight text-[10px] font-bold font-mono shadow">MCA</span>
+        </div>
+      </div>
+
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-300 text-xs tracking-widest uppercase">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        Interactive 3D Portfolio Experience
+      </div>
+
+      <h1 class="font-cinzel text-4xl sm:text-6xl font-bold tracking-tight text-white text-glow leading-tight">
+        THE LIVING<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-amber-300">PUZZLE WORLD</span>
+      </h1>
+
+      <p class="font-cinzel text-base sm:text-lg text-slate-300 tracking-wider italic">
+        "Every piece tells my story. Together, they define me."
+      </p>
+
+      <div class="flex items-center justify-center gap-4 py-2">
+        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-violet-500"></div>
+        <p class="text-sm font-light text-slate-300">
+          <strong class="text-amber-300 font-semibold">Nishitha</strong> — MCA Candidate & Aspiring Software Developer (Java • Cloud • Android • Web)
+        </p>
+        <div class="w-16 h-[1px] bg-gradient-to-l from-transparent to-violet-500"></div>
+      </div>
+
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <button onclick="enterWorld()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cobalt-600 via-violet-600 to-amber-500 text-white font-semibold shadow-xl shadow-violet-900/50 hover:scale-105 transition-transform flex items-center justify-center gap-3">
+          <span>EXPLORE MY WORLD</span>
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </button>
+        <button onclick="enterWorld(); openExhibit('resume');" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl glass-panel text-slate-200 hover:text-white hover:border-slate-400 transition flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4 text-amber-400"></i>
+          <span>VIEW RESUME</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 pt-4 flex items-center justify-center gap-2">
+        <i data-lucide="mouse-pointer" class="w-3.5 h-3.5"></i>
+        Click & drag to orbit • Click any floating puzzle piece to reveal its chamber
+      </p>
+    </div>
+  </div>
+
+  <!-- FLOATING 3D HOVER TOOLTIP -->
+  <div id="hover-tag" class="fixed pointer-events-none z-20 opacity-0 transition-opacity duration-200 -translate-x-1/2 -translate-y-full pb-3">
+    <div class="glass-panel px-3.5 py-1.5 rounded-xl border border-violet-400/40 shadow-xl flex items-center gap-2 text-xs">
+      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+      <span id="hover-piece-title" class="font-cinzel font-bold text-white tracking-wider">PIECE NAME</span>
+      <span class="text-[10px] text-violet-300 uppercase tracking-wider font-mono">CLICK TO ENTER</span>
+    </div>
+  </div>
+
+  <!-- BOTTOM STATUS & CAMERA HINT -->
+  <footer class="absolute bottom-6 left-6 right-6 z-20 flex items-center justify-between pointer-events-none">
+    <div class="glass-panel px-4 py-2 rounded-xl text-[11px] text-slate-400 flex items-center gap-3 pointer-events-auto">
+      <span class="flex items-center gap-1.5"><i data-lucide="orbit" class="w-3.5 h-3.5 text-violet-400"></i> Left Click + Drag: Orbit</span>
+      <span class="hidden sm:inline text-slate-600">|</span>
+      <span class="hidden sm:flex items-center gap-1.5"><i data-lucide="zoom-in" class="w-3.5 h-3.5 text-blue-400"></i> Scroll: Zoom</span>
+      <span class="text-slate-600">|</span>
+      <button onclick="resumeOrbiting()" class="hover:text-amber-300 text-amber-400 font-mono transition flex items-center gap-1">
+        <i data-lucide="play-circle" class="w-3.5 h-3.5"></i> Keep Orbiting
+      </button>
+      <span class="text-slate-600">|</span>
+      <button onclick="resetCameraView()" class="hover:text-amber-300 text-slate-300 font-mono transition">Reset View</button>
+    </div>
+
+    <!-- Quick Piece Carousel for Mobile / Recruiters -->
+    <div class="pointer-events-auto flex items-center gap-1 glass-panel p-1.5 rounded-2xl">
+      <button onclick="prevExhibitQuick()" class="p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition">
+        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+      </button>
+      <span id="carousel-label" class="text-xs font-mono font-medium text-slate-300 px-2 select-none">Piece 1 / 8</span>
+      <button onclick="nextExhibitQuick()" class="p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition">
+        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </footer>
+
+  <!-- EXHIBITS DIRECTORY DRAWER -->
+  <div id="directory-drawer" class="fixed top-0 right-0 bottom-0 w-80 max-w-[90vw] z-40 glass-panel border-l border-white/10 p-6 flex flex-col justify-between translate-x-full transition-transform duration-300 shadow-2xl">
+    <div>
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <h3 class="font-cinzel font-bold text-white tracking-wider flex items-center gap-2">
+          <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+          EXHIBIT DIRECTORY
+        </h3>
+        <button onclick="toggleDirectory()" class="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Drawer Profile Card with Photo -->
+      <div class="my-4 p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl overflow-hidden border border-amber-400/40 shrink-0">
+          <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0f172a/f59e0b?text=N';">
+        </div>
+        <div>
+          <div class="font-cinzel font-bold text-sm text-white">Nishitha</div>
+          <div class="text-[11px] text-amber-300 font-mono">MCA Candidate</div>
+          <div class="text-[10px] text-slate-400">Byndoor, Karnataka</div>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-400 mb-3">Direct access to Nishitha's verified credentials and interactive chambers.</p>
+
+      <div class="space-y-2 overflow-y-auto max-h-[calc(100vh-300px)] pr-1" id="directory-items">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-white/10">
+      <button onclick="assembleWholePuzzle(); toggleDirectory();" class="w-full py-2.5 rounded-xl bg-violet-600/30 hover:bg-violet-600 border border-violet-500/40 text-xs font-semibold text-violet-200 transition flex items-center justify-center gap-2">
+        <i data-lucide="puzzle" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span>Trigger Final Assembly</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL EXHIBITION CHAMBER (Dynamic Content for 8 Pieces) -->
+  <div id="exhibit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-midnight/80 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-500">
+    <div id="modal-container" class="relative w-full max-w-4xl max-h-[90vh] glass-panel rounded-3xl border border-violet-500/30 shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-500">
+      
+      <!-- Chamber Header -->
+      <div class="px-6 sm:px-8 py-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
+        <div class="flex items-center gap-3">
+          <div id="modal-icon-badge" class="w-10 h-10 rounded-xl bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-amber-300">
+            <i data-lucide="box" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span id="modal-number" class="text-[10px] font-mono tracking-widest text-violet-400 uppercase">PIECE 01 • THE CORE</span>
+            <h2 id="modal-title" class="font-cinzel text-xl sm:text-2xl font-bold text-white tracking-wide">IDENTITY</h2>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="modal-prev-btn" onclick="navigateModal(-1)" class="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <button id="modal-next-btn" onclick="navigateModal(1)" class="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition">
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+          <button onclick="closeExhibit()" class="ml-2 p-2 rounded-xl bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chamber Body Dynamic Content -->
+      <div id="modal-content-body" class="p-6 sm:p-8 overflow-y-auto space-y-6">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Chamber Footer -->
+      <div class="px-6 sm:px-8 py-4 border-t border-white/10 bg-surface/50 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
+        <div class="flex items-center gap-2 font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Status: Piece Fully Synchronized</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="closeExhibit()" class="px-4 py-2 rounded-xl glass-panel hover:bg-white/10 text-slate-200 transition">
+            Return to 3D Sculpture
+          </button>
+          <button onclick="openExhibit('resume')" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium transition">
+            Inspect Full Resume
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CELEBRATION / FINAL ASSEMBLY NOTIFICATION -->
+  <div id="celebration-toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 glass-panel px-8 py-5 rounded-2xl border border-amber-400/60 glow-gold opacity-0 pointer-events-none transition-all duration-700 text-center max-w-md">
+    <div class="w-12 h-12 mx-auto rounded-full bg-gradient-to-tr from-amber-500 to-violet-500 flex items-center justify-center text-white mb-3 shadow-lg">
+      <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+    </div>
+    <h3 class="font-cinzel text-xl font-bold text-amber-300">SCULPTURE ASSEMBLED</h3>
+    <p class="font-cinzel text-sm text-slate-200 italic mt-1">"Every piece mattered. Now you can see the whole picture."</p>
+    <div class="flex items-center justify-center gap-3 mt-4">
+      <button onclick="openExhibit('resume')" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-midnight font-bold text-xs shadow-md transition">
+        Download Formal Resume
+      </button>
+      <button onclick="resumeOrbiting(); dismissToast();" class="px-3 py-2 rounded-xl glass-panel text-xs text-amber-300 hover:text-white transition flex items-center gap-1.5">
+        <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+        <span>Keep Orbiting</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    /* ==========================================================================
+       RESUME DATA STORE (VERIFIED & PRECISE FROM RESUME PDF)
+       ========================================================================== */
+    const RESUME_DATA = {
+      profile: {
+        name: "Nishitha",
+        role: "Master of Computer Applications (MCA) Candidate | Aspiring Software Developer",
+        location: "Byndoor, Karnataka, India",
+        phone: "+91 7019955674",
+        email: "nishitha7654@gmail.com",
+        linkedin: "https://linkedin.com",
+        summary: "Ambitious and goal-oriented Master of Computer Applications (MCA) student with a strong academic foundation in Computer Science from Mangalore University. Experienced in developing Android applications, web platforms, and relational database systems utilizing Java, PHP, Python, and MySQL. Certified in Cloud Computing by NPTEL (IIT / Govt. of India). Equipped with robust analytical problem-solving skills, academic project leadership, and a passion for engineering scalable software solutions."
+      },
+      pieces: [
+        {
+          id: "identity",
+          title: "IDENTITY",
+          sub: "The Personal Core",
+          icon: "user",
+          color: 0x8B5CF6,
+          desc: "Personal background, worldview, and career aspiration.",
+          pos: { x: 0, y: 1.8, z: 0 },
+          rot: { x: 0, y: 0, z: 0 },
+          contentHtml: `
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+              <div class="md:col-span-5 flex flex-col items-center text-center">
+                <div class="relative w-44 h-44 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-violet-500 to-cobalt-500 shadow-2xl glow-violet">
+                  <div class="w-full h-full rounded-[22px] overflow-hidden bg-midnight">
+                    <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/400x500/0f172a/f59e0b?text=Nishitha+MCA';">
+                  </div>
+                  <div class="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-500 to-amber-400 text-midnight text-[11px] font-bold px-3 py-1 rounded-full shadow-lg">
+                    MCA Scholar
+                  </div>
+                </div>
+                <h3 class="font-cinzel text-xl font-bold text-white mt-4">Nishitha</h3>
+                <p class="text-xs text-amber-300 font-mono">Byndoor, Karnataka, India</p>
+              </div>
+
+              <div class="md:col-span-7 space-y-4">
+                <div class="glass-panel p-5 rounded-2xl border-l-4 border-violet-500">
+                  <h4 class="text-sm font-semibold text-violet-300 uppercase tracking-wider mb-2 font-mono">Professional Philosophy</h4>
+                  <p class="text-sm text-slate-300 leading-relaxed">
+                    "I believe robust software isn't just about lines of code—it's an intricate puzzle where database integrity, elegant architectures, and clean logic must fit together without friction."
+                  </p>
+                </div>
+                
+                <div class="space-y-3">
+                  <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono">Core Attributes</h4>
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                      <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i>
+                      <span>Backend & Java Focus</span>
+                    </div>
+                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                      <i data-lucide="cloud" class="w-4 h-4 text-blue-400"></i>
+                      <span>Cloud Fundamentals</span>
+                    </div>
+                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                      <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i>
+                      <span>Relational Modeling</span>
+                    </div>
+                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                      <i data-lucide="sparkles" class="w-4 h-4 text-violet-400"></i>
+                      <span>Continuous Learner</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-2 flex items-center gap-3">
+                  <a href="mailto:nishitha7654@gmail.com" class="px-4 py-2 rounded-xl bg-violet-600/30 hover:bg-violet-600 text-violet-200 border border-violet-500/30 text-xs font-medium transition flex items-center gap-2">
+                    <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                    <span>nishitha7654@gmail.com</span>
+                  </a>
+                  <span class="text-xs font-mono text-slate-400">+91 7019955674</span>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "foundations",
+          title: "FOUNDATIONS",
+          sub: "Education Architecture",
+          icon: "graduation-cap",
+          color: 0x2563EB,
+          desc: "Academic degrees from Mangalore University and Poornaprajna.",
+          pos: { x: -2.2, y: 1.2, z: 0.6 },
+          rot: { x: 0.1, y: 0.2, z: -0.05 },
+          contentHtml: `
+            <div class="space-y-6">
+              <div class="flex items-center justify-between">
+                <p class="text-sm text-slate-300">Rigorous academic progression under Mangalore University, building theoretical foundations in computation, algorithms, and systems engineering.</p>
+                <span class="px-3 py-1 rounded-full text-xs font-mono bg-blue-500/10 text-blue-400 border border-blue-500/30">Mangalore University</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- MCA Card -->
+                <div class="glass-panel p-6 rounded-2xl border-t-2 border-violet-400 relative overflow-hidden group">
+                  <div class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/40">
+                    Currently Pursuing
+                  </div>
+                  <div class="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center text-violet-400 mb-4">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                  </div>
+                  <h3 class="font-cinzel text-lg font-bold text-white">Master of Computer Applications (MCA)</h3>
+                  <p class="text-xs text-amber-300 font-medium mt-1">Poornaprajna Institute of Management (PIM), Udupi</p>
+                  <p class="text-xs text-slate-400 mt-0.5">Affiliated with Mangalore University, Karnataka</p>
+                  
+                  <div class="mt-4 pt-4 border-t border-white/5 space-y-2">
+                    <div class="text-xs text-slate-300 font-mono flex items-center gap-2">
+                      <i data-lucide="check" class="w-3.5 h-3.5 text-violet-400"></i> Advanced Software Systems
+                    </div>
+                    <div class="text-xs text-slate-300 font-mono flex items-center gap-2">
+                      <i data-lucide="check" class="w-3.5 h-3.5 text-violet-400"></i> Enterprise Relational Databases & Cloud
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BCA Card -->
+                <div class="glass-panel p-6 rounded-2xl border-t-2 border-blue-400 relative overflow-hidden group">
+                  <div class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40">
+                    Graduated: 2025
+                  </div>
+                  <div class="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 mb-4">
+                    <i data-lucide="award" class="w-5 h-5"></i>
+                  </div>
+                  <h3 class="font-cinzel text-lg font-bold text-white">Bachelor of Computer Applications (BCA)</h3>
+                  <p class="text-xs text-amber-300 font-medium mt-1">Bhandarkars' Arts & Science College, Kundapura</p>
+                  <p class="text-xs text-slate-400 mt-0.5">Affiliated with Mangalore University, Karnataka</p>
+                  
+                  <div class="mt-4 pt-4 border-t border-white/5 space-y-2">
+                    <div class="text-xs text-slate-300 font-mono flex items-center gap-2">
+                      <i data-lucide="check" class="w-3.5 h-3.5 text-blue-400"></i> OOPs (Java, C++), Data Structures
+                    </div>
+                    <div class="text-xs text-slate-300 font-mono flex items-center gap-2">
+                      <i data-lucide="check" class="w-3.5 h-3.5 text-blue-400"></i> Web Technologies & Database Systems
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "skills",
+          title: "SKILLS",
+          sub: "Technology Ecosystem",
+          icon: "cpu",
+          color: 0x10B981,
+          desc: "Languages, databases, frameworks, and deployment engines.",
+          pos: { x: 2.2, y: 1.2, z: 0.6 },
+          rot: { x: -0.1, y: -0.2, z: 0.05 },
+          contentHtml: `
+            <div class="space-y-6">
+              <div class="text-sm text-slate-300">
+                Organized and practical skill inventory applied directly across Android engineering, relational backends, and cloud configurations.
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Programming Languages -->
+                <div class="glass-panel p-5 rounded-2xl">
+                  <div class="flex items-center gap-2.5 mb-3 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
+                    <i data-lucide="code-2" class="w-4 h-4"></i>
+                    <span>Programming Languages</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Java (Core & Backend)</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> PHP</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Python</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> JavaScript</span>
+                  </div>
+                </div>
+
+                <!-- Web & Mobile -->
+                <div class="glass-panel p-5 rounded-2xl">
+                  <div class="flex items-center gap-2.5 mb-3 text-blue-400 font-mono text-xs font-bold uppercase tracking-wider">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                    <span>Mobile & Web Platforms</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">Android Development</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">HTML5</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">CSS3</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">Responsive UI</span>
+                  </div>
+                </div>
+
+                <!-- Database & Servers -->
+                <div class="glass-panel p-5 rounded-2xl">
+                  <div class="flex items-center gap-2.5 mb-3 text-violet-400 font-mono text-xs font-bold uppercase tracking-wider">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                    <span>Databases & Local Servers</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">MySQL</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">Relational Schema Design</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">XAMPP Server</span>
+                  </div>
+                </div>
+
+                <!-- Tools & Cloud -->
+                <div class="glass-panel p-5 rounded-2xl">
+                  <div class="flex items-center gap-2.5 mb-3 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider">
+                    <i data-lucide="cloud-lightning" class="w-4 h-4"></i>
+                    <span>Tools & Cloud Deployment</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Git & GitHub</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Render Cloud Deployment</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Android Studio</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">VS Code</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "creations",
+          title: "CREATIONS",
+          sub: "The Project Universe",
+          icon: "layers",
+          color: 0xF59E0B,
+          desc: "ShelfIQ Library System and Placement Prep Portal.",
+          pos: { x: -2.4, y: -0.6, z: 0.3 },
+          rot: { x: 0.1, y: 0.25, z: 0.1 },
+          contentHtml: `
+            <div class="space-y-6">
+              <!-- Project 1: ShelfIQ -->
+              <div class="glass-panel p-6 rounded-2xl border-l-4 border-amber-400 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400">Mobile Application & Cloud Backend</span>
+                    <h3 class="font-cinzel text-xl font-bold text-white flex items-center gap-2">
+                      ShelfIQ — Library Management System
+                    </h3>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 text-[10px] font-mono border border-amber-500/30">Android</span>
+                    <span class="px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 text-[10px] font-mono border border-violet-500/30">Java</span>
+                    <span class="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-300 text-[10px] font-mono border border-blue-500/30">MySQL</span>
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">Render</span>
+                    <span class="px-2 py-0.5 rounded-md bg-slate-500/10 text-slate-300 text-[10px] font-mono border border-slate-500/30">Git</span>
+                  </div>
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Developed a full-featured Android library application backed by a modular Java service architecture to streamline book cataloging, member borrowing, and inventory workflows.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] font-mono text-amber-300 font-bold uppercase mb-1">Catalog & Borrowing</div>
+                    <p class="text-[11px] text-slate-300">Automated student checkout, return timestamps, and catalog categorization.</p>
+                  </div>
+                  <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] font-mono text-amber-300 font-bold uppercase mb-1">Fine Computation</div>
+                    <p class="text-[11px] text-slate-300">Automated late-return fee calculations based on configurable date intervals.</p>
+                  </div>
+                  <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] font-mono text-amber-300 font-bold uppercase mb-1">Cloud Deployment</div>
+                    <p class="text-[11px] text-slate-300">Managed code repositories in Git with backend cloud hosting deployed on Render.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Project 2: Placement Prep Portal -->
+              <div class="glass-panel p-6 rounded-2xl border-l-4 border-blue-400 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-blue-400">Full-Stack Web Portal</span>
+                    <h3 class="font-cinzel text-xl font-bold text-white flex items-center gap-2">
+                      Placement Preparation Portal
+                    </h3>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span class="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-300 text-[10px] font-mono border border-blue-500/30">PHP</span>
+                    <span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 text-[10px] font-mono border border-amber-500/30">MySQL</span>
+                    <span class="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 text-[10px] font-mono border border-purple-500/30">XAMPP</span>
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">HTML5/CSS3/JS</span>
+                  </div>
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Architected and deployed a centralized recruitment preparation web portal running on a local XAMPP environment to empower students preparing for campus placements.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] font-mono text-blue-300 font-bold uppercase mb-1">Mock Aptitude Tests</div>
+                    <p class="text-[11px] text-slate-300">Timed assessments with automated evaluation algorithms and immediate scorecards.</p>
+                  </div>
+                  <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] font-mono text-blue-300 font-bold uppercase mb-1">Question Bank Vault</div>
+                    <p class="text-[11px] text-slate-300">Curated technical and HR interview questions organized by subject and difficulty.</p>
+                  </div>
+                  <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] font-mono text-blue-300 font-bold uppercase mb-1">Performance Dashboard</div>
+                    <p class="text-[11px] text-slate-300">Dynamic review dashboards visualizing student progress and subject strengths.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "certifications",
+          title: "CERTIFICATIONS",
+          sub: "Cloud & Academic Accreditations",
+          icon: "shield-check",
+          color: 0x3B82F6,
+          desc: "NPTEL Online Certification in Cloud Computing (Ministry of Education / IIT).",
+          pos: { x: 0, y: -0.6, z: 0.1 },
+          rot: { x: 0, y: 0, z: 0 },
+          contentHtml: `
+            <div class="space-y-6">
+              <div class="glass-panel p-6 rounded-2xl border-2 border-blue-500/40 relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-400/40 flex items-center justify-center text-blue-400">
+                      <i data-lucide="cloud" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                      <span class="text-[10px] font-mono tracking-widest text-blue-400 uppercase">Government of India / IIT</span>
+                      <h3 class="font-cinzel text-xl font-bold text-white">NPTEL Cloud Computing Certification</h3>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Verified Honor</span>
+                  </div>
+                </div>
+
+                <div class="pt-4 space-y-4">
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    Issued under the prestigious <strong class="text-white">Ministry of Education, Government of India</strong> in partnership with premier <strong class="text-white">Indian Institutes of Technology (IIT)</strong>. Rigorous coursework covering foundational and enterprise-scale distributed compute paradigms.
+                  </p>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                      <div class="text-[10px] font-mono text-blue-300 font-bold uppercase mb-1">Cloud Architecture</div>
+                      <p class="text-[11px] text-slate-300">Service models (IaaS, PaaS, SaaS) and multi-tenant infrastructure.</p>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                      <div class="text-[10px] font-mono text-blue-300 font-bold uppercase mb-1">Virtualization</div>
+                      <p class="text-[11px] text-slate-300">Hypervisors, containerization, and dynamic resource provisioning.</p>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                      <div class="text-[10px] font-mono text-blue-300 font-bold uppercase mb-1">Distributed Systems</div>
+                      <p class="text-[11px] text-slate-300">Scalability patterns, consistency, fault tolerance & replication.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "competencies",
+          title: "COMPETENCIES",
+          sub: "Analytical & Leadership Strengths",
+          icon: "award",
+          color: 0xEC4899,
+          desc: "Algorithmic troubleshooting, academic leadership, and collaborative teamwork.",
+          pos: { x: 2.4, y: -0.6, z: 0.3 },
+          rot: { x: -0.1, y: -0.25, z: -0.1 },
+          contentHtml: `
+            <div class="space-y-4">
+              <p class="text-xs text-slate-300">Complementing technical fluency with critical thinking and initiative honed through university group coordination and complex software design.</p>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-panel p-5 rounded-2xl border-t-2 border-pink-400">
+                  <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 mb-3">
+                    <i data-lucide="brain" class="w-5 h-5"></i>
+                  </div>
+                  <h4 class="font-cinzel text-base font-bold text-white">Problem Solving & Logic</h4>
+                  <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Strong logical foundation in algorithmic troubleshooting, backend logic design, and relational integrity.
+                  </p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border-t-2 border-amber-400">
+                  <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                  </div>
+                  <h4 class="font-cinzel text-base font-bold text-white">Team Leadership & Initiative</h4>
+                  <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Proven ability to organize tasks, coordinate peer groups, and achieve collaborative project milestones seamlessly.
+                  </p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border-t-2 border-blue-400">
+                  <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-3">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                  </div>
+                  <h4 class="font-cinzel text-base font-bold text-white">Communication & Adaptability</h4>
+                  <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Skilled in articulating technical concepts clearly and quickly learning emerging technologies under evolving demands.
+                  </p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "journey",
+          title: "JOURNEY",
+          sub: "Evolution Timeline",
+          icon: "git-commit",
+          color: 0x6366F1,
+          desc: "Academic and technological milestone progression.",
+          pos: { x: -1.2, y: -2.0, z: -0.2 },
+          rot: { x: 0.15, y: 0.15, z: 0 },
+          contentHtml: `
+            <div class="space-y-6">
+              <div class="relative pl-6 space-y-6 border-l-2 border-violet-500/30">
+                <!-- Point 1 -->
+                <div class="relative">
+                  <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-violet-600 border-2 border-midnight flex items-center justify-center">
+                    <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                  </div>
+                  <div class="text-[11px] font-mono text-amber-400">Current Phase • 2025–Present</div>
+                  <h4 class="font-cinzel text-base font-bold text-white mt-0.5">Master of Computer Applications (MCA)</h4>
+                  <p class="text-xs text-slate-300">Poornaprajna Institute of Management (PIM), Udupi. Focusing on distributed systems, enterprise Java, and cloud engineering.</p>
+                </div>
+
+                <!-- Point 2 -->
+                <div class="relative">
+                  <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-midnight"></div>
+                  <div class="text-[11px] font-mono text-blue-400">National Accreditation</div>
+                  <h4 class="font-cinzel text-base font-bold text-white mt-0.5">NPTEL Cloud Computing Certification (IIT)</h4>
+                  <p class="text-xs text-slate-300">Mastered foundational cloud virtualization, architecture styles, and scalable infrastructure under Ministry of Education, Govt. of India.</p>
+                </div>
+
+                <!-- Point 3 -->
+                <div class="relative">
+                  <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-midnight"></div>
+                  <div class="text-[11px] font-mono text-emerald-400">Graduation 2025</div>
+                  <h4 class="font-cinzel text-base font-bold text-white mt-0.5">Bachelor of Computer Applications (BCA)</h4>
+                  <p class="text-xs text-slate-300">Bhandarkars' Arts & Science College, Kundapura (Mangalore University). Completed foundational training in data structures, OOPs, and relational databases.</p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "connect",
+          title: "CONNECT",
+          sub: "Bridge To The Next Chapter",
+          icon: "send",
+          color: 0xD97706,
+          desc: "Direct contact, email, LinkedIn, and hiring channels.",
+          pos: { x: 1.2, y: -2.0, z: -0.2 },
+          rot: { x: -0.15, y: -0.15, z: 0 },
+          contentHtml: `
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              <!-- Personal Portrait Card -->
+              <div class="md:col-span-5 flex flex-col items-center text-center p-4 rounded-2xl bg-white/5 border border-amber-500/20">
+                <div class="relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-xl mb-3">
+                  <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f59e0b?text=Nishitha';">
+                  <div class="absolute inset-0 bg-gradient-to-t from-midnight/80 via-transparent to-transparent"></div>
+                  <span class="absolute bottom-1 left-2 text-[10px] font-mono font-bold text-amber-300">Ready to Collaborate</span>
+                </div>
+                <h4 class="font-cinzel font-bold text-base text-white">Nishitha</h4>
+                <p class="text-xs text-slate-400 font-mono">Byndoor, Karnataka, India</p>
+                <div class="mt-3 flex items-center gap-1.5 text-[11px] text-emerald-400 font-mono">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  Open to Full-Time / Intern Roles
+                </div>
+              </div>
+
+              <!-- Contact Actions & Details -->
+              <div class="md:col-span-7 space-y-4">
+                <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Let's Build Meaningful Technology Together</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  I am actively seeking entry-level software development, junior engineering, or IT software engineering roles. I am eager to apply my Java, Android, relational SQL, and cloud foundations to high-impact teams.
+                </p>
+
+                <div class="space-y-2 pt-1">
+                  <div class="flex items-center gap-3 text-xs text-slate-300">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i>
+                    <span>Byndoor, Karnataka, India</span>
+                  </div>
+                  <div class="flex items-center gap-3 text-xs text-slate-300">
+                    <i data-lucide="phone" class="w-4 h-4 text-amber-400"></i>
+                    <span>+91 7019955674</span>
+                  </div>
+                  <div class="flex items-center gap-3 text-xs text-slate-300">
+                    <i data-lucide="mail" class="w-4 h-4 text-amber-400"></i>
+                    <span>nishitha7654@gmail.com</span>
+                  </div>
+                </div>
+
+                <div class="pt-2 flex flex-col sm:flex-row gap-2">
+                  <a href="mailto:nishitha7654@gmail.com?subject=Job%20Opportunity%20for%20Nishitha" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-midnight font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span>Send Email</span>
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 rounded-xl glass-panel hover:bg-white/10 text-white text-xs font-semibold flex items-center justify-center gap-2 transition">
+                    <i data-lucide="linkedin" class="w-3.5 h-3.5 text-blue-400"></i>
+                    <span>LinkedIn</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          `
+        }
+      ]
+    };
+
+    /* ==========================================================================
+       SOUND SYNTHESIZER (Web Audio API - No external files required)
+       ========================================================================== */
+    let audioCtx = null;
+    let isAudioEnabled = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function toggleAudio() {
+      initAudio();
+      isAudioEnabled = !isAudioEnabled;
+      const icon = document.getElementById('audio-icon');
+      if (isAudioEnabled) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        icon.setAttribute('data-lucide', 'volume-2');
+        playSynthChime(660, 0.15);
+      } else {
+        icon.setAttribute('data-lucide', 'volume-x');
+      }
+      lucide.createIcons();
+    }
+
+    function playSynthChime(freq = 440, duration = 0.2) {
+      if (!isAudioEnabled || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + duration);
+
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Audio error safe ignore
+      }
+    }
+
+    /* ==========================================================================
+       THREE.JS 3D PUZZLE WORLD ENGINE
+       ========================================================================== */
+    let scene, camera, renderer, controls;
+    let puzzleGroup;
+    let puzzleMeshList = [];
+    let hoveredMesh = null;
+    let raycaster, mouse;
+    let particlesMesh;
+    let currentExhibitIndex = 0;
+    const visitedPieces = new Set();
+    let isAssembled = false;
+    let isAutoOrbitEnabled = true;
+
+    function init3DWorld() {
+      const container = document.getElementById('webgl-container');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      // 1. Scene & Atmosphere
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050714);
+      scene.fog = new THREE.FogExp2(0x050714, 0.05);
+
+      // 2. Camera
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.set(0, 0.5, 7.8);
+
+      // 3. Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      container.appendChild(renderer.domElement);
+
+      // 4. Orbit Controls (Configured for smooth auto-orbit & user interaction)
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxDistance = 14;
+      controls.minDistance = 3.5;
+      controls.maxPolarAngle = Math.PI / 1.7;
+      controls.minPolarAngle = Math.PI / 3.5;
+      
+      // Auto-Orbit settings
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.9;
+
+      // 5. Lighting: Multi-point Atmospheric Lighting
+      const ambientLight = new THREE.AmbientLight(0x1e1b4b, 1.2);
+      scene.add(ambientLight);
+
+      // Key light: Electric Violet
+      const violetLight = new THREE.PointLight(0x8B5CF6, 3.5, 20);
+      violetLight.position.set(4, 5, 4);
+      scene.add(violetLight);
+
+      // Fill light: Deep Cobalt
+      const blueLight = new THREE.PointLight(0x2563EB, 3.2, 20);
+      blueLight.position.set(-5, -2, 4);
+      scene.add(blueLight);
+
+      // Accent light: Champagne Gold
+      const goldLight = new THREE.DirectionalLight(0xF59E0B, 1.4);
+      goldLight.position.set(0, 8, 3);
+      scene.add(goldLight);
+
+      // 6. Reflective Pedestal Plane
+      const floorGeo = new THREE.PlaneGeometry(30, 30);
+      const floorMat = new THREE.MeshStandardMaterial({
+        color: 0x070b1e,
+        roughness: 0.25,
+        metalness: 0.85,
+        wireframe: false
+      });
+      const floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -3.2;
+      scene.add(floor);
+
+      // Subtle Grid Guide
+      const grid = new THREE.GridHelper(26, 26, 0x3b82f6, 0x1e293b);
+      grid.position.y = -3.19;
+      scene.add(grid);
+
+      // 7. Ambient Particle Field
+      createStarDust();
+
+      // 8. Generate Procedural 3D Interlocking Puzzle Group
+      createLivingPuzzleStructure();
+
+      // 9. Interaction Setup
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+
+      window.addEventListener('resize', onWindowResize);
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('click', onCanvasClick);
+      window.addEventListener('touchend', onTouchEnd, { passive: true });
+
+      // Start animation loop
+      animate();
+    }
+
+    /* Ambient Dust Particles */
+    function createStarDust() {
+      const count = 350;
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+      const colors = new Float32Array(count * 3);
+
+      for (let i = 0; i < count * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 18;
+        positions[i + 1] = (Math.random() - 0.5) * 14;
+        positions[i + 2] = (Math.random() - 0.5) * 14;
+
+        // Violet-to-gold palette
+        colors[i] = 0.5 + Math.random() * 0.4;
+        colors[i + 1] = 0.4 + Math.random() * 0.4;
+        colors[i + 2] = 0.9;
+      }
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const mat = new THREE.PointsMaterial({
+        size: 0.045,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.65,
+        blending: THREE.AdditiveBlending
+      });
+      particlesMesh = new THREE.Points(geo, mat);
+      scene.add(particlesMesh);
+    }
+
+    /* Generate Custom 3D Interlocking Puzzle Geometry using ExtrudeShape */
+    function createPuzzlePieceGeometry(tabPattern = { top: 1, right: -1, bottom: 1, left: -1 }) {
+      const shape = new THREE.Shape();
+      const s = 0.95; // half dimension
+      const tabR = 0.22; // tab radius
+
+      shape.moveTo(-s, -s);
+
+      // Bottom Edge
+      if (tabPattern.bottom === 1) {
+        shape.lineTo(-tabR * 1.5, -s);
+        shape.bezierCurveTo(-tabR * 1.5, -s - tabR * 1.8, tabR * 1.5, -s - tabR * 1.8, tabR * 1.5, -s);
+      } else if (tabPattern.bottom === -1) {
+        shape.lineTo(-tabR * 1.5, -s);
+        shape.bezierCurveTo(-tabR * 1.5, -s + tabR * 1.8, tabR * 1.5, -s + tabR * 1.8, tabR * 1.5, -s);
+      }
+      shape.lineTo(s, -s);
+
+      // Right Edge
+      if (tabPattern.right === 1) {
+        shape.lineTo(s, -tabR * 1.5);
+        shape.bezierCurveTo(s + tabR * 1.8, -tabR * 1.5, s + tabR * 1.8, tabR * 1.5, s, tabR * 1.5);
+      } else if (tabPattern.right === -1) {
+        shape.lineTo(s, -tabR * 1.5);
+        shape.bezierCurveTo(s - tabR * 1.8, -tabR * 1.5, s - tabR * 1.8, tabR * 1.5, s, tabR * 1.5);
+      }
+      shape.lineTo(s, s);
+
+      // Top Edge
+      if (tabPattern.top === 1) {
+        shape.lineTo(tabR * 1.5, s);
+        shape.bezierCurveTo(tabR * 1.5, s + tabR * 1.8, -tabR * 1.5, s + tabR * 1.8, -tabR * 1.5, s);
+      } else if (tabPattern.top === -1) {
+        shape.lineTo(tabR * 1.5, s);
+        shape.bezierCurveTo(tabR * 1.5, s - tabR * 1.8, -tabR * 1.5, s - tabR * 1.8, -tabR * 1.5, s);
+      }
+      shape.lineTo(-s, s);
+
+      // Left Edge
+      if (tabPattern.left === 1) {
+        shape.lineTo(-s, tabR * 1.5);
+        shape.bezierCurveTo(-s - tabR * 1.8, tabR * 1.5, -s - tabR * 1.8, -tabR * 1.5, -s, -tabR * 1.5);
+      } else if (tabPattern.left === -1) {
+        shape.lineTo(-s, tabR * 1.5);
+        shape.bezierCurveTo(-s + tabR * 1.8, tabR * 1.5, -s + tabR * 1.8, -tabR * 1.5, -s, -tabR * 1.5);
+      }
+      shape.lineTo(-s, -s);
+
+      const extrudeSettings = {
+        steps: 1,
+        depth: 0.22,
+        bevelEnabled: true,
+        bevelThickness: 0.05,
+        bevelSize: 0.04,
+        bevelOffset: 0,
+        bevelSegments: 4
+      };
+
+      const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      geo.center();
+      return geo;
+    }
+
+    /* Build the 8-Piece Living Structure */
+    function createLivingPuzzleStructure() {
+      puzzleGroup = new THREE.Group();
+      scene.add(puzzleGroup);
+
+      const patterns = [
+        { top: 1, right: 1, bottom: -1, left: 0 },
+        { top: 0, right: -1, bottom: 1, left: 1 },
+        { top: -1, right: 0, bottom: 1, left: -1 },
+        { top: 1, right: -1, bottom: -1, left: 1 },
+        { top: -1, right: 1, bottom: 1, left: -1 },
+        { top: 1, right: 0, bottom: -1, left: 1 },
+        { top: 0, right: 1, bottom: 0, left: -1 },
+        { top: 1, right: -1, bottom: 0, left: 1 },
+      ];
+
+      RESUME_DATA.pieces.forEach((pieceData, idx) => {
+        const geo = createPuzzlePieceGeometry(patterns[idx % patterns.length]);
+
+        // Elegant semi-translucent frosted metallic material
+        const mat = new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(pieceData.color),
+          emissive: new THREE.Color(pieceData.color),
+          emissiveIntensity: 0.2,
+          roughness: 0.18,
+          metalness: 0.65,
+          clearcoat: 0.7,
+          clearcoatRoughness: 0.1,
+          transmission: 0.25,
+          opacity: 0.95,
+          transparent: true,
+        });
+
+        const mesh = new THREE.Mesh(geo, mat);
+        
+        // Initial detached positions (floating puzzle world waiting to assemble)
+        const explodeFactor = 1.35;
+        mesh.position.set(
+          pieceData.pos.x * explodeFactor,
+          pieceData.pos.y * explodeFactor,
+          pieceData.pos.z * explodeFactor + (Math.sin(idx) * 0.4)
+        );
+        mesh.rotation.set(
+          pieceData.rot.x,
+          pieceData.rot.y + (Math.random() * 0.2 - 0.1),
+          pieceData.rot.z
+        );
+
+        // Store references
+        mesh.userData = {
+          pieceData: pieceData,
+          index: idx,
+          homePos: new THREE.Vector3(pieceData.pos.x, pieceData.pos.y, pieceData.pos.z),
+          detachedPos: mesh.position.clone(),
+          baseEmissive: new THREE.Color(pieceData.color),
+          floatOffset: Math.random() * Math.PI * 2
+        };
+
+        // Edge Accent Outline
+        const edges = new THREE.EdgesGeometry(geo, 25);
+        const lineMat = new THREE.LineBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.35
+        });
+        const edgeLine = new THREE.LineSegments(edges, lineMat);
+        mesh.add(edgeLine);
+
+        puzzleGroup.add(mesh);
+        puzzleMeshList.push(mesh);
+      });
+    }
+
+    /* Raycasting / Interaction */
+    function onMouseMove(e) {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      // Update hover tooltip position
+      const tag = document.getElementById('hover-tag');
+      tag.style.left = `${e.clientX}px`;
+      tag.style.top = `${e.clientY}px`;
+
+      checkRaycast();
+    }
+
+    function checkRaycast() {
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(puzzleMeshList);
+
+      const tag = document.getElementById('hover-tag');
+      const tagTitle = document.getElementById('hover-piece-title');
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+
+        if (hoveredMesh !== hit) {
+          // Reset previous
+          if (hoveredMesh) resetPieceHover(hoveredMesh);
+
+          hoveredMesh = hit;
+          highlightPieceHover(hoveredMesh);
+          playSynthChime(520, 0.08);
+
+          // Show Tag
+          tagTitle.textContent = `${hit.userData.pieceData.id.toUpperCase()} — ${hit.userData.pieceData.title}`;
+          tag.classList.remove('opacity-0');
+          document.body.style.cursor = 'pointer';
+        }
+      } else {
+        if (hoveredMesh) {
+          resetPieceHover(hoveredMesh);
+          hoveredMesh = null;
+        }
+        tag.classList.add('opacity-0');
+        document.body.style.cursor = 'default';
+      }
+    }
+
+    function highlightPieceHover(mesh) {
+      new TWEEN.Tween(mesh.material)
+        .to({ emissiveIntensity: 0.75 }, 250)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
+
+      new TWEEN.Tween(mesh.scale)
+        .to({ x: 1.08, y: 1.08, z: 1.08 }, 250)
+        .easing(TWEEN.Easing.Back.Out)
+        .start();
+    }
+
+    function resetPieceHover(mesh) {
+      new TWEEN.Tween(mesh.material)
+        .to({ emissiveIntensity: 0.2 }, 300)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
+
+      new TWEEN.Tween(mesh.scale)
+        .to({ x: 1, y: 1, z: 1 }, 300)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
+    }
+
+    function onCanvasClick(e) {
+      // Ignore if clicking on UI overlays
+      if (e.target.closest('#intro-hero') || e.target.closest('#exhibit-modal') || e.target.closest('#directory-drawer') || e.target.closest('header') || e.target.closest('footer')) {
+        return;
+      }
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(puzzleMeshList);
+
+      if (intersects.length > 0) {
+        const clickedMesh = intersects[0].object;
+        playSynthChime(780, 0.2);
+        openExhibit(clickedMesh.userData.pieceData.id);
+      }
+    }
+
+    function onTouchEnd(e) {
+      if (e.touches && e.touches.length > 0) {
+        mouse.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+        checkRaycast();
+      }
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    /* Core Render & Animation Loop */
+    let clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      TWEEN.update();
+
+      const elapsed = clock.getElapsedTime();
+
+      // Gentle floating animation of individual puzzle pieces
+      puzzleMeshList.forEach((mesh) => {
+        const offset = mesh.userData.floatOffset;
+        mesh.position.y += Math.sin(elapsed * 1.5 + offset) * 0.0008;
+        mesh.rotation.z += Math.cos(elapsed * 1.2 + offset) * 0.0004;
+      });
+
+      // Subtle particles drift
+      if (particlesMesh) {
+        particlesMesh.rotation.y = elapsed * 0.02;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    /* Auto Orbit Control Functions */
+    function toggleOrbitMode() {
+      isAutoOrbitEnabled = !isAutoOrbitEnabled;
+      updateOrbitUIState();
+    }
+
+    function resumeOrbiting() {
+      isAutoOrbitEnabled = true;
+      updateOrbitUIState();
+      playSynthChime(660, 0.12);
+    }
+
+    function updateOrbitUIState() {
+      controls.autoRotate = isAutoOrbitEnabled;
+      const btn = document.getElementById('btn-orbit-toggle');
+      const icon = document.getElementById('orbit-icon');
+      const label = document.getElementById('orbit-status-label');
+
+      if (isAutoOrbitEnabled) {
+        btn.classList.add('text-amber-300', 'border-amber-500/40', 'bg-amber-500/10');
+        btn.classList.remove('text-slate-400');
+        icon.classList.add('animate-spin');
+        if (label) label.textContent = 'Orbiting';
+      } else {
+        btn.classList.remove('text-amber-300', 'border-amber-500/40', 'bg-amber-500/10');
+        btn.classList.add('text-slate-400');
+        icon.classList.remove('animate-spin');
+        if (label) label.textContent = 'Orbit Paused';
+      }
+      lucide.createIcons();
+    }
+
+    /* ==========================================================================
+       USER EXPERIENCE & EXHIBITION CHAMBERS
+       ========================================================================== */
+
+    function enterWorld() {
+      initAudio();
+      const hero = document.getElementById('intro-hero');
+      hero.style.opacity = '0';
+      setTimeout(() => hero.remove(), 1000);
+
+      // Smooth camera transition closer into the structure
+      new TWEEN.Tween(camera.position)
+        .to({ x: 0, y: 0.2, z: 6.2 }, 1500)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+      playSynthChime(660, 0.3);
+    }
+
+    function resetCameraView() {
+      new TWEEN.Tween(camera.position)
+        .to({ x: 0, y: 0.5, z: 7.8 }, 1000)
+        .easing(TWEEN.Easing.Cubic.Out)
+        .start();
+      controls.target.set(0, 0, 0);
+    }
+
+    /* Open Exhibit Modal */
+    function openExhibit(pieceId) {
+      if (pieceId === 'resume') {
+        openResumeModal();
+        return;
+      }
+
+      const pieceIdx = RESUME_DATA.pieces.findIndex(p => p.id === pieceId);
+      if (pieceIdx === -1) return;
+
+      currentExhibitIndex = pieceIdx;
+      const piece = RESUME_DATA.pieces[pieceIdx];
+
+      // Mark visited & update progress
+      visitedPieces.add(piece.id);
+      updateProgressDisplay();
+
+      // Pull corresponding 3D puzzle mesh forward into locked position
+      const targetMesh = puzzleMeshList[pieceIdx];
+      if (targetMesh) {
+        new TWEEN.Tween(targetMesh.position)
+          .to({
+            x: targetMesh.userData.homePos.x,
+            y: targetMesh.userData.homePos.y,
+            z: targetMesh.userData.homePos.z + 0.3
+          }, 800)
+          .easing(TWEEN.Easing.Back.Out)
+          .start();
+
+        new TWEEN.Tween(targetMesh.material)
+          .to({ emissiveIntensity: 0.6 }, 400)
+          .start();
+      }
+
+      // Populate Modal Content
+      document.getElementById('modal-number').textContent = `EXHIBIT 0${pieceIdx + 1} • THE LIVING WORLD`;
+      document.getElementById('modal-title').textContent = `${piece.title} — ${piece.sub}`;
+      document.getElementById('modal-content-body').innerHTML = piece.contentHtml;
+      
+      // Update carousel label
+      document.getElementById('carousel-label').textContent = `Piece ${pieceIdx + 1} / 8`;
+
+      // Gently slow down orbit while viewing exhibit
+      controls.autoRotateSpeed = 0.25;
+
+      // Show Modal
+      const modal = document.getElementById('exhibit-modal');
+      const container = document.getElementById('modal-container');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      container.classList.remove('scale-95');
+      container.classList.add('scale-100');
+
+      lucide.createIcons();
+      playSynthChime(880, 0.15);
+
+      // Check if all pieces visited
+      if (visitedPieces.size === RESUME_DATA.pieces.length && !isAssembled) {
+        triggerAssemblyCelebration();
+      }
+    }
+
+    function closeExhibit() {
+      const modal = document.getElementById('exhibit-modal');
+      const container = document.getElementById('modal-container');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      container.classList.remove('scale-100');
+      container.classList.add('scale-95');
+
+      // Restore full orbit speed
+      controls.autoRotateSpeed = 0.9;
+      controls.autoRotate = isAutoOrbitEnabled;
+
+      // Return mesh to home/assembled grid position
+      const currentMesh = puzzleMeshList[currentExhibitIndex];
+      if (currentMesh) {
+        new TWEEN.Tween(currentMesh.position)
+          .to(currentMesh.userData.homePos, 600)
+          .easing(TWEEN.Easing.Quadratic.Out)
+          .start();
+        new TWEEN.Tween(currentMesh.material)
+          .to({ emissiveIntensity: 0.35 }, 400)
+          .start();
+      }
+    }
+
+    function navigateModal(direction) {
+      let nextIdx = (currentExhibitIndex + direction + RESUME_DATA.pieces.length) % RESUME_DATA.pieces.length;
+      openExhibit(RESUME_DATA.pieces[nextIdx].id);
+    }
+
+    function prevExhibitQuick() {
+      let nextIdx = (currentExhibitIndex - 1 + RESUME_DATA.pieces.length) % RESUME_DATA.pieces.length;
+      openExhibit(RESUME_DATA.pieces[nextIdx].id);
+    }
+
+    function nextExhibitQuick() {
+      let nextIdx = (currentExhibitIndex + 1) % RESUME_DATA.pieces.length;
+      openExhibit(RESUME_DATA.pieces[nextIdx].id);
+    }
+
+    /* Update Discovery Progress */
+    function updateProgressDisplay() {
+      const total = RESUME_DATA.pieces.length;
+      const count = visitedPieces.size;
+      const pct = (count / total) * 100;
+
+      document.getElementById('progress-text').textContent = `${count} / ${total} PIECES`;
+      document.getElementById('progress-bar').style.width = `${pct}%`;
+    }
+
+    /* Assemble All Pieces Into Final Architectural Form */
+    function assembleWholePuzzle() {
+      isAssembled = true;
+      RESUME_DATA.pieces.forEach(p => visitedPieces.add(p.id));
+      updateProgressDisplay();
+
+      // Animate each mesh into precise locking coords
+      puzzleMeshList.forEach((mesh, i) => {
+        new TWEEN.Tween(mesh.position)
+          .to(mesh.userData.homePos, 1200 + i * 80)
+          .easing(TWEEN.Easing.Elastic.Out)
+          .start();
+
+        new TWEEN.Tween(mesh.rotation)
+          .to({ x: 0, y: 0, z: 0 }, 1000)
+          .start();
+
+        new TWEEN.Tween(mesh.material)
+          .to({ emissiveIntensity: 0.55 }, 800)
+          .start();
+      });
+
+      // Camera majestic orbital zoom
+      new TWEEN.Tween(camera.position)
+        .to({ x: 0, y: 1.2, z: 7.2 }, 1500)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+      triggerAssemblyCelebration();
+    }
+
+    function triggerAssemblyCelebration() {
+      const toast = document.getElementById('celebration-toast');
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      playSynthChime(523.25, 0.2);
+      setTimeout(() => playSynthChime(659.25, 0.2), 150);
+      setTimeout(() => playSynthChime(783.99, 0.4), 300);
+    }
+
+    function dismissToast() {
+      const toast = document.getElementById('celebration-toast');
+      toast.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    /* Guided Tour */
+    let isTourRunning = false;
+    let tourTimeout = null;
+
+    function startGuidedTour() {
+      isTourRunning = true;
+      currentExhibitIndex = 0;
+      openExhibit(RESUME_DATA.pieces[0].id);
+
+      // Guided tour notification
+      const btn = document.getElementById('btn-tour');
+      btn.innerHTML = `<i data-lucide="pause" class="w-3.5 h-3.5 text-amber-400"></i><span>Touring...</span>`;
+      lucide.createIcons();
+    }
+
+    /* Directory Drawer */
+    function toggleDirectory() {
+      const drawer = document.getElementById('directory-drawer');
+      const isClosed = drawer.classList.contains('translate-x-full');
+      if (isClosed) {
+        drawer.classList.remove('translate-x-full');
+      } else {
+        drawer.classList.add('translate-x-full');
+      }
+    }
+
+    function renderDirectoryItems() {
+      const container = document.getElementById('directory-items');
+      container.innerHTML = RESUME_DATA.pieces.map((p, idx) => `
+        <button onclick="openExhibit('${p.id}'); toggleDirectory();" class="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-violet-500/40 transition flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono text-amber-400 font-bold">0${idx + 1}</span>
+            <div>
+              <div class="font-cinzel text-xs font-bold text-white group-hover:text-amber-300 transition">${p.title}</div>
+              <div class="text-[10px] text-slate-400">${p.sub}</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white transition"></i>
+        </button>
+      `).join('');
+    }
+
+    /* Clean Printable & Downloadable Resume Modal */
+    function openResumeModal() {
+      document.getElementById('modal-number').textContent = 'PIECE 09 • THE COMPLETE PICTURE';
+      document.getElementById('modal-title').textContent = 'Nishitha — Official Resume & Dossier';
+      
+      document.getElementById('modal-content-body').innerHTML = `
+        <div class="bg-white text-slate-900 p-8 rounded-2xl shadow-2xl font-sans max-w-3xl mx-auto space-y-6 print:p-0">
+          <!-- Resume Header -->
+          <div class="border-b-2 border-slate-900 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="font-cinzel text-3xl font-black tracking-wider text-slate-900">NISHITHA</h1>
+              <p class="text-xs font-bold text-slate-700 tracking-wide mt-1 uppercase">Master of Computer Applications (MCA) Candidate | Aspiring Software Developer</p>
+              <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600 mt-2 font-mono">
+                <span>Byndoor, Karnataka, India</span>
+                <span>•</span>
+                <span>+91 7019955674</span>
+                <span>•</span>
+                <a href="mailto:nishitha7654@gmail.com" class="text-blue-600 hover:underline">nishitha7654@gmail.com</a>
+              </div>
+            </div>
+            <div class="w-20 h-20 rounded-xl overflow-hidden border border-slate-300 shadow-sm shrink-0">
+              <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/150x150/0f172a/ffffff?text=Nishitha';">
+            </div>
+          </div>
+
+          <!-- Professional Summary -->
+          <div>
+            <h2 class="text-xs font-black tracking-widest text-slate-900 uppercase border-b border-slate-300 pb-1 mb-2">Professional Summary</h2>
+            <p class="text-xs text-slate-700 leading-relaxed">
+              Ambitious and goal-oriented Master of Computer Applications (MCA) student with a strong academic foundation in Computer Science from Mangalore University. Experienced in developing Android applications, web platforms, and relational database systems utilizing Java, PHP, Python, and MySQL. Skilled in working with Git, XAMPP, and Render cloud deployments. Certified in Cloud Computing by NPTEL (IIT/Govt. of India), equipped with robust analytical problem-solving skills and academic project leadership abilities. Eager to contribute technical expertise to an entry-level software development or IT engineering role.
+            </p>
+          </div>
+
+          <!-- Education -->
+          <div>
+            <h2 class="text-xs font-black tracking-widest text-slate-900 uppercase border-b border-slate-300 pb-1 mb-2">Education</h2>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between items-baseline text-xs">
+                  <span class="font-bold text-slate-900">Master of Computer Applications (MCA)</span>
+                  <span class="font-mono text-slate-600 text-[11px]">Currently Pursuing</span>
+                </div>
+                <div class="text-xs text-slate-700">Poornaprajna Institute of Management (PIM), Udupi</div>
+                <div class="text-[11px] text-slate-500">Affiliated with Mangalore University, Karnataka</div>
+              </div>
+              <div>
+                <div class="flex justify-between items-baseline text-xs">
+                  <span class="font-bold text-slate-900">Bachelor of Computer Applications (BCA)</span>
+                  <span class="font-mono text-slate-600 text-[11px]">Graduated: 2025</span>
+                </div>
+                <div class="text-xs text-slate-700">Bhandarkars' Arts & Science College, Kundapura</div>
+                <div class="text-[11px] text-slate-500">Affiliated with Mangalore University, Karnataka</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical Skills -->
+          <div>
+            <h2 class="text-xs font-black tracking-widest text-slate-900 uppercase border-b border-slate-300 pb-1 mb-2">Technical Skills</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div><strong class="text-slate-900">Programming Languages:</strong> Java, PHP, Python, JavaScript</div>
+              <div><strong class="text-slate-900">Mobile & Web:</strong> Android Development, HTML5, CSS3, JavaScript</div>
+              <div><strong class="text-slate-900">Database & Servers:</strong> MySQL, XAMPP Server</div>
+              <div><strong class="text-slate-900">Tools & Cloud Deployment:</strong> Git, GitHub, Render, VS Code, Android Studio</div>
+              <div class="sm:col-span-2"><strong class="text-slate-900">Core Concepts:</strong> Cloud Computing, Object-Oriented Programming (OOP), Relational Database Design</div>
+            </div>
+          </div>
+
+          <!-- Projects -->
+          <div>
+            <h2 class="text-xs font-black tracking-widest text-slate-900 uppercase border-b border-slate-300 pb-1 mb-2">Technical Projects</h2>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between items-baseline text-xs">
+                  <span class="font-bold text-slate-900">ShelfIQ — Library Management System</span>
+                  <span class="font-mono text-slate-600 text-[11px]">Android • Java • MySQL • Render</span>
+                </div>
+                <ul class="list-disc list-inside text-xs text-slate-700 mt-1 space-y-0.5">
+                  <li>Developed full-featured Android library application with a Java backend to manage cataloging and student borrowing.</li>
+                  <li>Integrated MySQL database operations for book search, availability tracking, member registration, and automated fine calculation.</li>
+                  <li>Managed project version tracking using Git, deploying backend services on Render for reliable cloud hosting.</li>
+                </ul>
+              </div>
+
+              <div>
+                <div class="flex justify-between items-baseline text-xs">
+                  <span class="font-bold text-slate-900">Placement Preparation Portal</span>
+                  <span class="font-mono text-slate-600 text-[11px]">PHP • XAMPP • MySQL • HTML/CSS/JS</span>
+                </div>
+                <ul class="list-disc list-inside text-xs text-slate-700 mt-1 space-y-0.5">
+                  <li>Designed and implemented a centralized recruitment preparation web portal running on local XAMPP using PHP and MySQL.</li>
+                  <li>Developed interactive modules for mock aptitude tests, structured interview question banks, and review dashboards.</li>
+                  <li>Created responsive interfaces facilitating smooth access to study materials, timed tests, and instant scoring workflows.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certifications & Soft Skills -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <h2 class="text-xs font-black tracking-widest text-slate-900 uppercase border-b border-slate-300 pb-1 mb-2">Certifications</h2>
+              <p class="text-xs text-slate-800 font-semibold">NPTEL Online Certification in Cloud Computing</p>
+              <p class="text-[11px] text-slate-600">Ministry of Education, Govt. of India / IIT Coursework focusing on cloud architecture, virtualization, and distributed systems fundamentals.</p>
+            </div>
+            <div>
+              <h2 class="text-xs font-black tracking-widest text-slate-900 uppercase border-b border-slate-300 pb-1 mb-2">Soft Skills & Competencies</h2>
+              <ul class="list-disc list-inside text-xs text-slate-700 space-y-0.5">
+                <li>Problem Solving & Analytical Thinking (backend logic)</li>
+                <li>Team Leadership & Task Organization</li>
+                <li>Effective Communication & Rapid Adaptability</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Print / Download Trigger -->
+          <div class="pt-4 border-t border-slate-200 flex items-center justify-between">
+            <span class="text-[11px] font-mono text-slate-500">Document Source: Nishitha_Resume_Final-v2.docx</span>
+            <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-2">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              <span>Print / Save as PDF</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      const modal = document.getElementById('exhibit-modal');
+      const container = document.getElementById('modal-container');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      container.classList.remove('scale-95');
+      container.classList.add('scale-100');
+
+      lucide.createIcons();
+    }
+
+    /* Initialize Application on DOM Ready */
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderDirectoryItems();
+      init3DWorld();
+    });
+  </script>
+</body>
+</html>
