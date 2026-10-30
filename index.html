@@ -2,8 +2,8 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Living Puzzle World | Nishitha — MCA Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title> Nishitha — MCA Portfolio</title>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,6 +80,10 @@
       background: radial-gradient(circle at center, transparent 35%, rgba(5, 7, 20, 0.88) 100%);
       pointer-events: none;
     }
+    /* Touch optimization */
+    canvas {
+      touch-action: none;
+    }
   </style>
 </head>
 <body class="bg-midnight text-slate-100 font-sans overflow-hidden select-none w-screen h-screen">
@@ -91,20 +95,20 @@
   <div class="radial-vignette absolute inset-0 z-10 pointer-events-none"></div>
 
   <!-- TOP HUD: Brand, Progress, Actions -->
-  <header class="absolute top-0 left-0 right-0 z-20 px-6 py-5 flex items-center justify-between pointer-events-none">
+  <header class="absolute top-0 left-0 right-0 z-20 px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between pointer-events-none">
     <!-- Brand -->
     <div class="pointer-events-auto flex items-center gap-3">
-      <div class="relative w-11 h-11 rounded-xl bg-gradient-to-tr from-violet-600 via-cobalt-500 to-amber-400 p-[1.5px] shadow-lg shadow-violet-900/40 shrink-0">
+      <div class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-violet-600 via-cobalt-500 to-amber-400 p-[1.5px] shadow-lg shadow-violet-900/40 shrink-0">
         <div class="w-full h-full bg-midnight rounded-[10px] overflow-hidden flex items-center justify-center">
           <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0f172a/f59e0b?text=N';">
         </div>
-        <span class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-midnight rounded-full" title="Active"></span>
+        <span class="absolute -bottom-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-500 border-2 border-midnight rounded-full" title="Active"></span>
       </div>
       <div>
-        <h1 class="font-cinzel text-lg tracking-wider text-slate-100 font-bold flex items-center gap-2">
-          THE LIVING PUZZLE <span class="text-xs px-2 py-0.5 rounded-full bg-violet-950/80 text-violet-300 border border-violet-800/40">MCA '25</span>
+        <h1 class="font-cinzel text-base sm:text-lg tracking-wider text-slate-100 font-bold flex items-center gap-1.5 sm:gap-2">
+          THE LIVING PUZZLE <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-violet-950/80 text-violet-300 border border-violet-800/40">MCA '25</span>
         </h1>
-        <p class="text-xs text-slate-400 tracking-widest uppercase font-mono">Nishitha • Software Developer</p>
+        <p class="text-[10px] sm:text-xs text-slate-400 tracking-widest uppercase font-mono">Nishitha</p>
       </div>
     </div>
 
@@ -124,15 +128,15 @@
     </div>
 
     <!-- Right Controls: Audio, Orbit, Tour, Directory, Resume -->
-    <div class="pointer-events-auto flex items-center gap-2.5">
+    <div class="pointer-events-auto flex items-center gap-2 sm:gap-2.5">
       <!-- Orbit Auto-Rotate Toggle Button -->
-      <button id="btn-orbit-toggle" onclick="toggleOrbitMode()" title="Toggle Auto-Orbit" class="flex items-center gap-1.5 px-3 py-2 rounded-xl glass-panel text-xs text-amber-300 border-amber-500/40 bg-amber-500/10 shadow-lg shadow-amber-500/10 transition">
+      <button id="btn-orbit-toggle" onclick="toggleOrbitMode()" title="Toggle Auto-Orbit" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl glass-panel text-xs text-amber-300 border-amber-500/40 bg-amber-500/10 shadow-lg shadow-amber-500/10 transition">
         <i id="orbit-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 animate-spin"></i>
         <span id="orbit-status-label" class="hidden sm:inline font-mono">Orbiting</span>
       </button>
 
       <!-- Sound Synthesizer Toggle -->
-      <button id="btn-audio" onclick="toggleAudio()" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-violet-500/50 transition">
+      <button id="btn-audio" onclick="toggleAudio()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:border-violet-500/50 transition">
         <i id="audio-icon" data-lucide="volume-x" class="w-4 h-4"></i>
       </button>
 
@@ -143,13 +147,13 @@
       </button>
 
       <!-- Exhibition Directory Drawer Button -->
-      <button onclick="toggleDirectory()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl glass-panel text-xs text-slate-200 hover:border-violet-500/50 hover:text-white transition">
+      <button onclick="toggleDirectory()" class="flex items-center gap-2 px-2.5 sm:px-3.5 py-2 rounded-xl glass-panel text-xs text-slate-200 hover:border-violet-500/50 hover:text-white transition">
         <i data-lucide="layers" class="w-3.5 h-3.5 text-violet-400"></i>
         <span class="hidden sm:inline">Exhibits</span>
       </button>
 
       <!-- Resume Button -->
-      <button onclick="openExhibit('resume')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cobalt to-violet hover:brightness-110 text-white text-xs font-semibold shadow-lg shadow-violet-900/30 transition">
+      <button onclick="openExhibit('resume')" class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-cobalt to-violet hover:brightness-110 text-white text-xs font-semibold shadow-lg shadow-violet-900/30 transition">
         <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
         <span>Resume</span>
       </button>
@@ -157,12 +161,12 @@
   </header>
 
   <!-- INTRO HERO OVERLAY (Fades on start) -->
-  <div id="intro-hero" class="absolute inset-0 z-30 flex items-center justify-center p-6 bg-midnight/80 backdrop-blur-md transition-opacity duration-1000">
-    <div class="max-w-2xl text-center space-y-6">
+  <div id="intro-hero" class="absolute inset-0 z-30 flex items-center justify-center p-4 sm:p-6 bg-midnight/80 backdrop-blur-md transition-opacity duration-1000 overflow-y-auto">
+    <div class="max-w-2xl text-center space-y-5 sm:space-y-6 my-auto">
       
       <!-- Hero Photo Avatar Preview -->
       <div class="flex justify-center">
-        <div class="relative w-24 h-24 rounded-2xl p-1 bg-gradient-to-tr from-amber-400 via-violet-500 to-cobalt-500 shadow-2xl glow-violet">
+        <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl p-1 bg-gradient-to-tr from-amber-400 via-violet-500 to-cobalt-500 shadow-2xl glow-violet">
           <div class="w-full h-full rounded-[14px] overflow-hidden bg-midnight">
             <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/200x200/0f172a/f59e0b?text=Nishitha';">
           </div>
@@ -175,24 +179,20 @@
         Interactive 3D Portfolio Experience
       </div>
 
-      <h1 class="font-cinzel text-4xl sm:text-6xl font-bold tracking-tight text-white text-glow leading-tight">
+      <h1 class="font-cinzel text-3xl sm:text-6xl font-bold tracking-tight text-white text-glow leading-tight">
         THE LIVING<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-amber-300">PUZZLE WORLD</span>
       </h1>
 
-      <p class="font-cinzel text-base sm:text-lg text-slate-300 tracking-wider italic">
-        "Every piece tells my story. Together, they define me."
-      </p>
-
       <div class="flex items-center justify-center gap-4 py-2">
-        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-violet-500"></div>
-        <p class="text-sm font-light text-slate-300">
-          <strong class="text-amber-300 font-semibold">Nishitha</strong> — MCA Candidate & Aspiring Software Developer (Java • Cloud • Android • Web)
+        <div class="w-12 sm:w-16 h-[1px] bg-gradient-to-r from-transparent to-violet-500"></div>
+        <p class="text-xs sm:text-sm font-light text-slate-300 px-2">
+          <strong class="text-amber-300 font-semibold">Nishitha</strong> — MCA Candidate
         </p>
-        <div class="w-16 h-[1px] bg-gradient-to-l from-transparent to-violet-500"></div>
+        <div class="w-12 sm:w-16 h-[1px] bg-gradient-to-l from-transparent to-violet-500"></div>
       </div>
 
-      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button onclick="enterWorld()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cobalt-600 via-violet-600 to-amber-500 text-white font-semibold shadow-xl shadow-violet-900/50 hover:scale-105 transition-transform flex items-center justify-center gap-3">
+      <div class="pt-2 sm:pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+        <button onclick="enterWorld()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cobalt-600 via-violet-600 to-amber-500 text-white font-semibold shadow-xl shadow-violet-900/50 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3">
           <span>EXPLORE MY WORLD</span>
           <i data-lucide="sparkles" class="w-4 h-4"></i>
         </button>
@@ -202,9 +202,9 @@
         </button>
       </div>
 
-      <p class="text-xs text-slate-500 pt-4 flex items-center justify-center gap-2">
+      <p class="text-[11px] sm:text-xs text-slate-500 pt-2 sm:pt-4 flex items-center justify-center gap-2">
         <i data-lucide="mouse-pointer" class="w-3.5 h-3.5"></i>
-        Click & drag to orbit • Click any floating puzzle piece to reveal its chamber
+        Drag to orbit • Tap or click any floating puzzle piece to reveal its chamber
       </p>
     </div>
   </div>
@@ -219,36 +219,36 @@
   </div>
 
   <!-- BOTTOM STATUS & CAMERA HINT -->
-  <footer class="absolute bottom-6 left-6 right-6 z-20 flex items-center justify-between pointer-events-none">
-    <div class="glass-panel px-4 py-2 rounded-xl text-[11px] text-slate-400 flex items-center gap-3 pointer-events-auto">
-      <span class="flex items-center gap-1.5"><i data-lucide="orbit" class="w-3.5 h-3.5 text-violet-400"></i> Left Click + Drag: Orbit</span>
+  <footer class="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 z-20 flex items-center justify-between pointer-events-none">
+    <div class="glass-panel px-3 sm:px-4 py-2 rounded-xl text-[10px] sm:text-[11px] text-slate-400 flex items-center gap-2 sm:gap-3 pointer-events-auto">
+      <span class="hidden sm:flex items-center gap-1.5"><i data-lucide="orbit" class="w-3.5 h-3.5 text-violet-400"></i> Drag: Orbit</span>
       <span class="hidden sm:inline text-slate-600">|</span>
-      <span class="hidden sm:flex items-center gap-1.5"><i data-lucide="zoom-in" class="w-3.5 h-3.5 text-blue-400"></i> Scroll: Zoom</span>
-      <span class="text-slate-600">|</span>
+      <span class="hidden sm:flex items-center gap-1.5"><i data-lucide="zoom-in" class="w-3.5 h-3.5 text-blue-400"></i> Pinch/Scroll: Zoom</span>
+      <span class="hidden sm:inline text-slate-600">|</span>
       <button onclick="resumeOrbiting()" class="hover:text-amber-300 text-amber-400 font-mono transition flex items-center gap-1">
-        <i data-lucide="play-circle" class="w-3.5 h-3.5"></i> Keep Orbiting
+        <i data-lucide="play-circle" class="w-3.5 h-3.5"></i> <span class="hidden xs:inline">Keep</span> Orbiting
       </button>
       <span class="text-slate-600">|</span>
-      <button onclick="resetCameraView()" class="hover:text-amber-300 text-slate-300 font-mono transition">Reset View</button>
+      <button onclick="resetCameraView()" class="hover:text-amber-300 text-slate-300 font-mono transition">Reset</button>
     </div>
 
     <!-- Quick Piece Carousel for Mobile / Recruiters -->
-    <div class="pointer-events-auto flex items-center gap-1 glass-panel p-1.5 rounded-2xl">
-      <button onclick="prevExhibitQuick()" class="p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition">
+    <div class="pointer-events-auto flex items-center gap-1 glass-panel p-1 sm:p-1.5 rounded-2xl">
+      <button onclick="prevExhibitQuick()" class="p-1.5 sm:p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition">
         <i data-lucide="chevron-left" class="w-4 h-4"></i>
       </button>
-      <span id="carousel-label" class="text-xs font-mono font-medium text-slate-300 px-2 select-none">Piece 1 / 8</span>
-      <button onclick="nextExhibitQuick()" class="p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition">
+      <span id="carousel-label" class="text-[11px] sm:text-xs font-mono font-medium text-slate-300 px-1 sm:px-2 select-none">Piece 1 / 8</span>
+      <button onclick="nextExhibitQuick()" class="p-1.5 sm:p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition">
         <i data-lucide="chevron-right" class="w-4 h-4"></i>
       </button>
     </div>
   </footer>
 
   <!-- EXHIBITS DIRECTORY DRAWER -->
-  <div id="directory-drawer" class="fixed top-0 right-0 bottom-0 w-80 max-w-[90vw] z-40 glass-panel border-l border-white/10 p-6 flex flex-col justify-between translate-x-full transition-transform duration-300 shadow-2xl">
+  <div id="directory-drawer" class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] z-40 glass-panel border-l border-white/10 p-5 sm:p-6 flex flex-col justify-between translate-x-full transition-transform duration-300 shadow-2xl">
     <div>
       <div class="flex items-center justify-between pb-4 border-b border-white/10">
-        <h3 class="font-cinzel font-bold text-white tracking-wider flex items-center gap-2">
+        <h3 class="font-cinzel font-bold text-white tracking-wider flex items-center gap-2 text-sm sm:text-base">
           <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
           EXHIBIT DIRECTORY
         </h3>
@@ -271,7 +271,7 @@
 
       <p class="text-xs text-slate-400 mb-3">Direct access to Nishitha's verified credentials and interactive chambers.</p>
 
-      <div class="space-y-2 overflow-y-auto max-h-[calc(100vh-300px)] pr-1" id="directory-items">
+      <div class="space-y-2 overflow-y-auto max-h-[calc(100vh-280px)] pr-1" id="directory-items">
         <!-- Rendered via JS -->
       </div>
     </div>
@@ -285,50 +285,50 @@
   </div>
 
   <!-- MODAL EXHIBITION CHAMBER (Dynamic Content for 8 Pieces) -->
-  <div id="exhibit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-midnight/80 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-500">
-    <div id="modal-container" class="relative w-full max-w-4xl max-h-[90vh] glass-panel rounded-3xl border border-violet-500/30 shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-500">
+  <div id="exhibit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-8 bg-midnight/80 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-500">
+    <div id="modal-container" class="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] glass-panel rounded-2xl sm:rounded-3xl border border-violet-500/30 shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-500">
       
       <!-- Chamber Header -->
-      <div class="px-6 sm:px-8 py-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
+      <div class="px-5 sm:px-8 py-4 sm:py-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
         <div class="flex items-center gap-3">
-          <div id="modal-icon-badge" class="w-10 h-10 rounded-xl bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-amber-300">
-            <i data-lucide="box" class="w-5 h-5"></i>
+          <div id="modal-icon-badge" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-amber-300 shrink-0">
+            <i data-lucide="box" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           </div>
           <div>
-            <span id="modal-number" class="text-[10px] font-mono tracking-widest text-violet-400 uppercase">PIECE 01 • THE CORE</span>
-            <h2 id="modal-title" class="font-cinzel text-xl sm:text-2xl font-bold text-white tracking-wide">IDENTITY</h2>
+            <span id="modal-number" class="text-[9px] sm:text-[10px] font-mono tracking-widest text-violet-400 uppercase">PIECE 01 • THE CORE</span>
+            <h2 id="modal-title" class="font-cinzel text-lg sm:text-2xl font-bold text-white tracking-wide truncate max-w-[200px] sm:max-w-none">IDENTITY</h2>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <button id="modal-prev-btn" onclick="navigateModal(-1)" class="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition">
-            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        <div class="flex items-center gap-1 sm:gap-2">
+          <button id="modal-prev-btn" onclick="navigateModal(-1)" class="p-1.5 sm:p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition">
+            <i data-lucide="arrow-left" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           </button>
-          <button id="modal-next-btn" onclick="navigateModal(1)" class="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition">
-            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          <button id="modal-next-btn" onclick="navigateModal(1)" class="p-1.5 sm:p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition">
+            <i data-lucide="arrow-right" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           </button>
-          <button onclick="closeExhibit()" class="ml-2 p-2 rounded-xl bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white transition">
-            <i data-lucide="x" class="w-5 h-5"></i>
+          <button onclick="closeExhibit()" class="ml-1 sm:ml-2 p-1.5 sm:p-2 rounded-xl bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white transition">
+            <i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           </button>
         </div>
       </div>
 
       <!-- Chamber Body Dynamic Content -->
-      <div id="modal-content-body" class="p-6 sm:p-8 overflow-y-auto space-y-6">
+      <div id="modal-content-body" class="p-5 sm:p-8 overflow-y-auto space-y-5 sm:space-y-6">
         <!-- Injected via JavaScript -->
       </div>
 
       <!-- Chamber Footer -->
-      <div class="px-6 sm:px-8 py-4 border-t border-white/10 bg-surface/50 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
-        <div class="flex items-center gap-2 font-mono">
+      <div class="px-5 sm:px-8 py-3.5 sm:py-4 border-t border-white/10 bg-surface/50 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
+        <div class="flex items-center gap-2 font-mono text-[11px] sm:text-xs">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span>Status: Piece Fully Synchronized</span>
+          <span>Status: Synchronized</span>
         </div>
-        <div class="flex items-center gap-3">
-          <button onclick="closeExhibit()" class="px-4 py-2 rounded-xl glass-panel hover:bg-white/10 text-slate-200 transition">
-            Return to 3D Sculpture
+        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
+          <button onclick="closeExhibit()" class="flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl glass-panel hover:bg-white/10 text-slate-200 text-xs transition">
+            Return
           </button>
-          <button onclick="openExhibit('resume')" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium transition">
+          <button onclick="openExhibit('resume')" class="flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-xs transition">
             Inspect Full Resume
           </button>
         </div>
@@ -338,15 +338,15 @@
   </div>
 
   <!-- CELEBRATION / FINAL ASSEMBLY NOTIFICATION -->
-  <div id="celebration-toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 glass-panel px-8 py-5 rounded-2xl border border-amber-400/60 glow-gold opacity-0 pointer-events-none transition-all duration-700 text-center max-w-md">
-    <div class="w-12 h-12 mx-auto rounded-full bg-gradient-to-tr from-amber-500 to-violet-500 flex items-center justify-center text-white mb-3 shadow-lg">
-      <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+  <div id="celebration-toast" class="fixed bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-50 glass-panel px-6 sm:px-8 py-4 sm:py-5 rounded-2xl border border-amber-400/60 glow-gold opacity-0 pointer-events-none transition-all duration-700 text-center max-w-[90vw] sm:max-w-md">
+    <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-gradient-to-tr from-amber-500 to-violet-500 flex items-center justify-center text-white mb-2 sm:mb-3 shadow-lg">
+      <i data-lucide="check" class="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]"></i>
     </div>
-    <h3 class="font-cinzel text-xl font-bold text-amber-300">SCULPTURE ASSEMBLED</h3>
-    <p class="font-cinzel text-sm text-slate-200 italic mt-1">"Every piece mattered. Now you can see the whole picture."</p>
-    <div class="flex items-center justify-center gap-3 mt-4">
-      <button onclick="openExhibit('resume')" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-midnight font-bold text-xs shadow-md transition">
-        Download Formal Resume
+    <h3 class="font-cinzel text-lg sm:text-xl font-bold text-amber-300">SCULPTURE ASSEMBLED</h3>
+    <p class="font-cinzel text-xs sm:text-sm text-slate-200 italic mt-1">"Every piece mattered. Now you can see the whole picture."</p>
+    <div class="flex items-center justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
+      <button onclick="openExhibit('resume')" class="px-3.5 sm:px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-midnight font-bold text-xs shadow-md transition">
+        View Resume
       </button>
       <button onclick="resumeOrbiting(); dismissToast();" class="px-3 py-2 rounded-xl glass-panel text-xs text-amber-300 hover:text-white transition flex items-center gap-1.5">
         <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
@@ -358,12 +358,12 @@
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     /* ==========================================================================
-       RESUME DATA STORE (VERIFIED & PRECISE FROM RESUME PDF)
+       RESUME DATA STORE
        ========================================================================== */
     const RESUME_DATA = {
       profile: {
         name: "Nishitha",
-        role: "Master of Computer Applications (MCA) Candidate | Aspiring Software Developer",
+        role: "Master of Computer Applications (MCA) Candidate",
         location: "Byndoor, Karnataka, India",
         phone: "+91 7019955674",
         email: "nishitha7654@gmail.com",
@@ -381,9 +381,9 @@
           pos: { x: 0, y: 1.8, z: 0 },
           rot: { x: 0, y: 0, z: 0 },
           contentHtml: `
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-center">
               <div class="md:col-span-5 flex flex-col items-center text-center">
-                <div class="relative w-44 h-44 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-violet-500 to-cobalt-500 shadow-2xl glow-violet">
+                <div class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-violet-500 to-cobalt-500 shadow-2xl glow-violet">
                   <div class="w-full h-full rounded-[22px] overflow-hidden bg-midnight">
                     <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/400x500/0f172a/f59e0b?text=Nishitha+MCA';">
                   </div>
@@ -396,36 +396,36 @@
               </div>
 
               <div class="md:col-span-7 space-y-4">
-                <div class="glass-panel p-5 rounded-2xl border-l-4 border-violet-500">
-                  <h4 class="text-sm font-semibold text-violet-300 uppercase tracking-wider mb-2 font-mono">Professional Philosophy</h4>
-                  <p class="text-sm text-slate-300 leading-relaxed">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl border-l-4 border-violet-500">
+                  <h4 class="text-xs sm:text-sm font-semibold text-violet-300 uppercase tracking-wider mb-1.5 font-mono">Professional Philosophy</h4>
+                  <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
                     "I believe robust software isn't just about lines of code—it's an intricate puzzle where database integrity, elegant architectures, and clean logic must fit together without friction."
                   </p>
                 </div>
                 
-                <div class="space-y-3">
+                <div class="space-y-2 sm:space-y-3">
                   <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono">Core Attributes</h4>
                   <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                    <div class="glass-panel p-2.5 sm:p-3 rounded-xl flex items-center gap-2">
                       <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i>
                       <span>Backend & Java Focus</span>
                     </div>
-                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                    <div class="glass-panel p-2.5 sm:p-3 rounded-xl flex items-center gap-2">
                       <i data-lucide="cloud" class="w-4 h-4 text-blue-400"></i>
                       <span>Cloud Fundamentals</span>
                     </div>
-                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                    <div class="glass-panel p-2.5 sm:p-3 rounded-xl flex items-center gap-2">
                       <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i>
                       <span>Relational Modeling</span>
                     </div>
-                    <div class="glass-panel p-3 rounded-xl flex items-center gap-2">
+                    <div class="glass-panel p-2.5 sm:p-3 rounded-xl flex items-center gap-2">
                       <i data-lucide="sparkles" class="w-4 h-4 text-violet-400"></i>
                       <span>Continuous Learner</span>
                     </div>
                   </div>
                 </div>
 
-                <div class="pt-2 flex items-center gap-3">
+                <div class="pt-2 flex flex-wrap items-center gap-3">
                   <a href="mailto:nishitha7654@gmail.com" class="px-4 py-2 rounded-xl bg-violet-600/30 hover:bg-violet-600 text-violet-200 border border-violet-500/30 text-xs font-medium transition flex items-center gap-2">
                     <i data-lucide="mail" class="w-3.5 h-3.5"></i>
                     <span>nishitha7654@gmail.com</span>
@@ -446,22 +446,22 @@
           pos: { x: -2.2, y: 1.2, z: 0.6 },
           rot: { x: 0.1, y: 0.2, z: -0.05 },
           contentHtml: `
-            <div class="space-y-6">
-              <div class="flex items-center justify-between">
-                <p class="text-sm text-slate-300">Rigorous academic progression under Mangalore University, building theoretical foundations in computation, algorithms, and systems engineering.</p>
-                <span class="px-3 py-1 rounded-full text-xs font-mono bg-blue-500/10 text-blue-400 border border-blue-500/30">Mangalore University</span>
+            <div class="space-y-5 sm:space-y-6">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <p class="text-xs sm:text-sm text-slate-300">Rigorous academic progression under Mangalore University, building theoretical foundations in computation, algorithms, and systems engineering.</p>
+                <span class="px-3 py-1 rounded-full text-xs font-mono bg-blue-500/10 text-blue-400 border border-blue-500/30 self-start sm:self-auto shrink-0">Mangalore University</span>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- MCA Card -->
-                <div class="glass-panel p-6 rounded-2xl border-t-2 border-violet-400 relative overflow-hidden group">
+                <div class="glass-panel p-5 sm:p-6 rounded-2xl border-t-2 border-violet-400 relative overflow-hidden group">
                   <div class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/40">
                     Currently Pursuing
                   </div>
-                  <div class="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center text-violet-400 mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center text-violet-400 mb-3 sm:mb-4">
                     <i data-lucide="book-open" class="w-5 h-5"></i>
                   </div>
-                  <h3 class="font-cinzel text-lg font-bold text-white">Master of Computer Applications (MCA)</h3>
+                  <h3 class="font-cinzel text-base sm:text-lg font-bold text-white">Master of Computer Applications (MCA)</h3>
                   <p class="text-xs text-amber-300 font-medium mt-1">Poornaprajna Institute of Management (PIM), Udupi</p>
                   <p class="text-xs text-slate-400 mt-0.5">Affiliated with Mangalore University, Karnataka</p>
                   
@@ -476,14 +476,14 @@
                 </div>
 
                 <!-- BCA Card -->
-                <div class="glass-panel p-6 rounded-2xl border-t-2 border-blue-400 relative overflow-hidden group">
+                <div class="glass-panel p-5 sm:p-6 rounded-2xl border-t-2 border-blue-400 relative overflow-hidden group">
                   <div class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40">
                     Graduated: 2025
                   </div>
-                  <div class="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 mb-3 sm:mb-4">
                     <i data-lucide="award" class="w-5 h-5"></i>
                   </div>
-                  <h3 class="font-cinzel text-lg font-bold text-white">Bachelor of Computer Applications (BCA)</h3>
+                  <h3 class="font-cinzel text-base sm:text-lg font-bold text-white">Bachelor of Computer Applications (BCA)</h3>
                   <p class="text-xs text-amber-300 font-medium mt-1">Bhandarkars' Arts & Science College, Kundapura</p>
                   <p class="text-xs text-slate-400 mt-0.5">Affiliated with Mangalore University, Karnataka</p>
                   
@@ -510,64 +510,64 @@
           pos: { x: 2.2, y: 1.2, z: 0.6 },
           rot: { x: -0.1, y: -0.2, z: 0.05 },
           contentHtml: `
-            <div class="space-y-6">
-              <div class="text-sm text-slate-300">
+            <div class="space-y-5 sm:space-y-6">
+              <div class="text-xs sm:text-sm text-slate-300">
                 Organized and practical skill inventory applied directly across Android engineering, relational backends, and cloud configurations.
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Programming Languages -->
-                <div class="glass-panel p-5 rounded-2xl">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl">
                   <div class="flex items-center gap-2.5 mb-3 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
                     <i data-lucide="code-2" class="w-4 h-4"></i>
                     <span>Programming Languages</span>
                   </div>
                   <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Java (Core & Backend)</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> PHP</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Python</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> JavaScript</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Java (Core & Backend)</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> PHP</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Python</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white flex items-center gap-1.5 hover:border-emerald-400 transition"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> JavaScript</span>
                   </div>
                 </div>
 
                 <!-- Web & Mobile -->
-                <div class="glass-panel p-5 rounded-2xl">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl">
                   <div class="flex items-center gap-2.5 mb-3 text-blue-400 font-mono text-xs font-bold uppercase tracking-wider">
                     <i data-lucide="smartphone" class="w-4 h-4"></i>
                     <span>Mobile & Web Platforms</span>
                   </div>
                   <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">Android Development</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">HTML5</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">CSS3</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">Responsive UI</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">Android Development</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">HTML5</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">CSS3</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-blue-400 transition">Responsive UI</span>
                   </div>
                 </div>
 
                 <!-- Database & Servers -->
-                <div class="glass-panel p-5 rounded-2xl">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl">
                   <div class="flex items-center gap-2.5 mb-3 text-violet-400 font-mono text-xs font-bold uppercase tracking-wider">
                     <i data-lucide="database" class="w-4 h-4"></i>
                     <span>Databases & Local Servers</span>
                   </div>
                   <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">MySQL</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">Relational Schema Design</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">XAMPP Server</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">MySQL</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">Relational Schema Design</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-violet-400 transition">XAMPP Server</span>
                   </div>
                 </div>
 
                 <!-- Tools & Cloud -->
-                <div class="glass-panel p-5 rounded-2xl">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl">
                   <div class="flex items-center gap-2.5 mb-3 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider">
                     <i data-lucide="cloud-lightning" class="w-4 h-4"></i>
                     <span>Tools & Cloud Deployment</span>
                   </div>
                   <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Git & GitHub</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Render Cloud Deployment</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Android Studio</span>
-                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">VS Code</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Git & GitHub</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Render Cloud Deployment</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">Android Studio</span>
+                    <span class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:border-amber-400 transition">VS Code</span>
                   </div>
                 </div>
               </div>
@@ -584,13 +584,13 @@
           pos: { x: -2.4, y: -0.6, z: 0.3 },
           rot: { x: 0.1, y: 0.25, z: 0.1 },
           contentHtml: `
-            <div class="space-y-6">
+            <div class="space-y-5 sm:space-y-6">
               <!-- Project 1: ShelfIQ -->
-              <div class="glass-panel p-6 rounded-2xl border-l-4 border-amber-400 space-y-4">
+              <div class="glass-panel p-5 sm:p-6 rounded-2xl border-l-4 border-amber-400 space-y-3 sm:space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400">Mobile Application & Cloud Backend</span>
-                    <h3 class="font-cinzel text-xl font-bold text-white flex items-center gap-2">
+                    <h3 class="font-cinzel text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                       ShelfIQ — Library Management System
                     </h3>
                   </div>
@@ -607,7 +607,7 @@
                   Developed a full-featured Android library application backed by a modular Java service architecture to streamline book cataloging, member borrowing, and inventory workflows.
                 </p>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
                   <div class="bg-black/30 p-3 rounded-xl border border-white/5">
                     <div class="text-[10px] font-mono text-amber-300 font-bold uppercase mb-1">Catalog & Borrowing</div>
                     <p class="text-[11px] text-slate-300">Automated student checkout, return timestamps, and catalog categorization.</p>
@@ -624,11 +624,11 @@
               </div>
 
               <!-- Project 2: Placement Prep Portal -->
-              <div class="glass-panel p-6 rounded-2xl border-l-4 border-blue-400 space-y-4">
+              <div class="glass-panel p-5 sm:p-6 rounded-2xl border-l-4 border-blue-400 space-y-3 sm:space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <span class="text-[10px] font-mono uppercase tracking-wider text-blue-400">Full-Stack Web Portal</span>
-                    <h3 class="font-cinzel text-xl font-bold text-white flex items-center gap-2">
+                    <h3 class="font-cinzel text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                       Placement Preparation Portal
                     </h3>
                   </div>
@@ -644,7 +644,7 @@
                   Architected and deployed a centralized recruitment preparation web portal running on a local XAMPP environment to empower students preparing for campus placements.
                 </p>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
                   <div class="bg-black/30 p-3 rounded-xl border border-white/5">
                     <div class="text-[10px] font-mono text-blue-300 font-bold uppercase mb-1">Mock Aptitude Tests</div>
                     <p class="text-[11px] text-slate-300">Timed assessments with automated evaluation algorithms and immediate scorecards.</p>
@@ -673,19 +673,19 @@
           rot: { x: 0, y: 0, z: 0 },
           contentHtml: `
             <div class="space-y-6">
-              <div class="glass-panel p-6 rounded-2xl border-2 border-blue-500/40 relative overflow-hidden">
+              <div class="glass-panel p-5 sm:p-6 rounded-2xl border-2 border-blue-500/40 relative overflow-hidden">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
                   <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-400/40 flex items-center justify-center text-blue-400">
+                    <div class="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-400/40 flex items-center justify-center text-blue-400 shrink-0">
                       <i data-lucide="cloud" class="w-6 h-6"></i>
                     </div>
                     <div>
                       <span class="text-[10px] font-mono tracking-widest text-blue-400 uppercase">Government of India / IIT</span>
-                      <h3 class="font-cinzel text-xl font-bold text-white">NPTEL Cloud Computing Certification</h3>
+                      <h3 class="font-cinzel text-lg sm:text-xl font-bold text-white">NPTEL Cloud Computing Certification</h3>
                     </div>
                   </div>
-                  <div class="text-right">
-                    <span class="px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Verified Honor</span>
+                  <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 inline-block">Verified Honor</span>
                   </div>
                 </div>
 
@@ -727,7 +727,7 @@
               <p class="text-xs text-slate-300">Complementing technical fluency with critical thinking and initiative honed through university group coordination and complex software design.</p>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="glass-panel p-5 rounded-2xl border-t-2 border-pink-400">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-pink-400">
                   <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 mb-3">
                     <i data-lucide="brain" class="w-5 h-5"></i>
                   </div>
@@ -737,7 +737,7 @@
                   </p>
                 </div>
 
-                <div class="glass-panel p-5 rounded-2xl border-t-2 border-amber-400">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-amber-400">
                   <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3">
                     <i data-lucide="users" class="w-5 h-5"></i>
                   </div>
@@ -747,7 +747,7 @@
                   </p>
                 </div>
 
-                <div class="glass-panel p-5 rounded-2xl border-t-2 border-blue-400">
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-blue-400">
                   <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-3">
                     <i data-lucide="message-square" class="w-5 h-5"></i>
                   </div>
@@ -814,7 +814,7 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
               <!-- Personal Portrait Card -->
               <div class="md:col-span-5 flex flex-col items-center text-center p-4 rounded-2xl bg-white/5 border border-amber-500/20">
-                <div class="relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-xl mb-3">
+                <div class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-xl mb-3">
                   <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f59e0b?text=Nishitha';">
                   <div class="absolute inset-0 bg-gradient-to-t from-midnight/80 via-transparent to-transparent"></div>
                   <span class="absolute bottom-1 left-2 text-[10px] font-mono font-bold text-amber-300">Ready to Collaborate</span>
@@ -829,7 +829,7 @@
 
               <!-- Contact Actions & Details -->
               <div class="md:col-span-7 space-y-4">
-                <h3 class="font-cinzel text-xl sm:text-2xl font-bold text-white">Let's Build Meaningful Technology Together</h3>
+                <h3 class="font-cinzel text-lg sm:text-2xl font-bold text-white">Let's Build Meaningful Technology Together</h3>
                 <p class="text-xs text-slate-300 leading-relaxed">
                   I am actively seeking entry-level software development, junior engineering, or IT software engineering roles. I am eager to apply my Java, Android, relational SQL, and cloud foundations to high-impact teams.
                 </p>
@@ -867,7 +867,7 @@
     };
 
     /* ==========================================================================
-       SOUND SYNTHESIZER (Web Audio API - No external files required)
+       SOUND SYNTHESIZER (Web Audio API)
        ========================================================================== */
     let audioCtx = null;
     let isAudioEnabled = false;
@@ -909,12 +909,12 @@
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
       } catch (e) {
-        // Audio error safe ignore
+        // Safe ignore
       }
     }
 
     /* ==========================================================================
-       THREE.JS 3D PUZZLE WORLD ENGINE
+       THREE.JS 3D PUZZLE WORLD ENGINE (RESPONSIVE FOR MOBILE & LAPTOP)
        ========================================================================== */
     let scene, camera, renderer, controls;
     let puzzleGroup;
@@ -927,6 +927,21 @@
     let isAssembled = false;
     let isAutoOrbitEnabled = true;
 
+    // Track touch interactions to distinguish tap from drag
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isTouchDrag = false;
+
+    function getOptimalCameraDistance() {
+      const isMobile = window.innerWidth < 768;
+      const aspect = window.innerWidth / window.innerHeight;
+      if (aspect < 1) {
+        // Portrait mobile screen: pull camera back so the sculpture isn't cropped
+        return Math.min(13.5, 7.8 / aspect);
+      }
+      return 7.8;
+    }
+
     function init3DWorld() {
       const container = document.getElementById('webgl-container');
       const width = window.innerWidth;
@@ -937,12 +952,12 @@
       scene.background = new THREE.Color(0x050714);
       scene.fog = new THREE.FogExp2(0x050714, 0.05);
 
-      // 2. Camera
+      // 2. Camera with responsive distance calculation
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.set(0, 0.5, 7.8);
+      camera.position.set(0, 0.5, getOptimalCameraDistance());
 
-      // 3. Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      // 3. Renderer with hardware pixel ratio cap for mobile performance
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.shadowMap.enabled = true;
@@ -951,52 +966,46 @@
       renderer.toneMappingExposure = 1.2;
       container.appendChild(renderer.domElement);
 
-      // 4. Orbit Controls (Configured for smooth auto-orbit & user interaction)
+      // 4. Orbit Controls
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      controls.maxDistance = 14;
+      controls.maxDistance = 16;
       controls.minDistance = 3.5;
       controls.maxPolarAngle = Math.PI / 1.7;
       controls.minPolarAngle = Math.PI / 3.5;
       
-      // Auto-Orbit settings
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.9;
 
-      // 5. Lighting: Multi-point Atmospheric Lighting
+      // 5. Lighting
       const ambientLight = new THREE.AmbientLight(0x1e1b4b, 1.2);
       scene.add(ambientLight);
 
-      // Key light: Electric Violet
       const violetLight = new THREE.PointLight(0x8B5CF6, 3.5, 20);
       violetLight.position.set(4, 5, 4);
       scene.add(violetLight);
 
-      // Fill light: Deep Cobalt
       const blueLight = new THREE.PointLight(0x2563EB, 3.2, 20);
       blueLight.position.set(-5, -2, 4);
       scene.add(blueLight);
 
-      // Accent light: Champagne Gold
       const goldLight = new THREE.DirectionalLight(0xF59E0B, 1.4);
       goldLight.position.set(0, 8, 3);
       scene.add(goldLight);
 
-      // 6. Reflective Pedestal Plane
-      const floorGeo = new THREE.PlaneGeometry(30, 30);
+      // 6. Reflective Floor
+      const floorGeo = new THREE.PlaneGeometry(32, 32);
       const floorMat = new THREE.MeshStandardMaterial({
         color: 0x070b1e,
         roughness: 0.25,
         metalness: 0.85,
-        wireframe: false
       });
       const floor = new THREE.Mesh(floorGeo, floorMat);
       floor.rotation.x = -Math.PI / 2;
       floor.position.y = -3.2;
       scene.add(floor);
 
-      // Subtle Grid Guide
       const grid = new THREE.GridHelper(26, 26, 0x3b82f6, 0x1e293b);
       grid.position.y = -3.19;
       scene.add(grid);
@@ -1014,15 +1023,17 @@
       window.addEventListener('resize', onWindowResize);
       window.addEventListener('mousemove', onMouseMove);
       window.addEventListener('click', onCanvasClick);
+      
+      // Touch handlers for responsive mobile control
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove', onTouchMove, { passive: true });
       window.addEventListener('touchend', onTouchEnd, { passive: true });
 
-      // Start animation loop
       animate();
     }
 
-    /* Ambient Dust Particles */
     function createStarDust() {
-      const count = 350;
+      const count = window.innerWidth < 768 ? 200 : 350;
       const geo = new THREE.BufferGeometry();
       const positions = new Float32Array(count * 3);
       const colors = new Float32Array(count * 3);
@@ -1032,7 +1043,6 @@
         positions[i + 1] = (Math.random() - 0.5) * 14;
         positions[i + 2] = (Math.random() - 0.5) * 14;
 
-        // Violet-to-gold palette
         colors[i] = 0.5 + Math.random() * 0.4;
         colors[i + 1] = 0.4 + Math.random() * 0.4;
         colors[i + 2] = 0.9;
@@ -1051,11 +1061,10 @@
       scene.add(particlesMesh);
     }
 
-    /* Generate Custom 3D Interlocking Puzzle Geometry using ExtrudeShape */
     function createPuzzlePieceGeometry(tabPattern = { top: 1, right: -1, bottom: 1, left: -1 }) {
       const shape = new THREE.Shape();
-      const s = 0.95; // half dimension
-      const tabR = 0.22; // tab radius
+      const s = 0.95;
+      const tabR = 0.22;
 
       shape.moveTo(-s, -s);
 
@@ -1085,7 +1094,7 @@
         shape.bezierCurveTo(tabR * 1.5, s + tabR * 1.8, -tabR * 1.5, s + tabR * 1.8, -tabR * 1.5, s);
       } else if (tabPattern.top === -1) {
         shape.lineTo(tabR * 1.5, s);
-        shape.bezierCurveTo(tabR * 1.5, s - tabR * 1.8, -tabR * 1.5, s - tabR * 1.8, -tabR * 1.5, s);
+        shape.bezierCurveTo(tabR * 1.5, s - tabR * 1.8, -tabR * 1.5, -s - tabR * 1.8, -tabR * 1.5, s);
       }
       shape.lineTo(-s, s);
 
@@ -1114,7 +1123,6 @@
       return geo;
     }
 
-    /* Build the 8-Piece Living Structure */
     function createLivingPuzzleStructure() {
       puzzleGroup = new THREE.Group();
       scene.add(puzzleGroup);
@@ -1133,7 +1141,6 @@
       RESUME_DATA.pieces.forEach((pieceData, idx) => {
         const geo = createPuzzlePieceGeometry(patterns[idx % patterns.length]);
 
-        // Elegant semi-translucent frosted metallic material
         const mat = new THREE.MeshPhysicalMaterial({
           color: new THREE.Color(pieceData.color),
           emissive: new THREE.Color(pieceData.color),
@@ -1149,7 +1156,6 @@
 
         const mesh = new THREE.Mesh(geo, mat);
         
-        // Initial detached positions (floating puzzle world waiting to assemble)
         const explodeFactor = 1.35;
         mesh.position.set(
           pieceData.pos.x * explodeFactor,
@@ -1162,7 +1168,6 @@
           pieceData.rot.z
         );
 
-        // Store references
         mesh.userData = {
           pieceData: pieceData,
           index: idx,
@@ -1172,7 +1177,6 @@
           floatOffset: Math.random() * Math.PI * 2
         };
 
-        // Edge Accent Outline
         const edges = new THREE.EdgesGeometry(geo, 25);
         const lineMat = new THREE.LineBasicMaterial({
           color: 0xffffff,
@@ -1187,12 +1191,10 @@
       });
     }
 
-    /* Raycasting / Interaction */
     function onMouseMove(e) {
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-      // Update hover tooltip position
       const tag = document.getElementById('hover-tag');
       tag.style.left = `${e.clientX}px`;
       tag.style.top = `${e.clientY}px`;
@@ -1211,14 +1213,12 @@
         const hit = intersects[0].object;
 
         if (hoveredMesh !== hit) {
-          // Reset previous
           if (hoveredMesh) resetPieceHover(hoveredMesh);
 
           hoveredMesh = hit;
           highlightPieceHover(hoveredMesh);
           playSynthChime(520, 0.08);
 
-          // Show Tag
           tagTitle.textContent = `${hit.userData.pieceData.id.toUpperCase()} — ${hit.userData.pieceData.title}`;
           tag.classList.remove('opacity-0');
           document.body.style.cursor = 'pointer';
@@ -1258,7 +1258,6 @@
     }
 
     function onCanvasClick(e) {
-      // Ignore if clicking on UI overlays
       if (e.target.closest('#intro-hero') || e.target.closest('#exhibit-modal') || e.target.closest('#directory-drawer') || e.target.closest('header') || e.target.closest('footer')) {
         return;
       }
@@ -1273,11 +1272,44 @@
       }
     }
 
+    function onTouchStart(e) {
+      if (e.touches && e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isTouchDrag = false;
+      }
+    }
+
+    function onTouchMove(e) {
+      if (e.touches && e.touches.length === 1) {
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        if (Math.hypot(dx, dy) > 8) {
+          isTouchDrag = true;
+        }
+      }
+    }
+
     function onTouchEnd(e) {
-      if (e.touches && e.touches.length > 0) {
-        mouse.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-        checkRaycast();
+      if (isTouchDrag) return;
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        
+        // Ignore clicks on active modals or drawer
+        const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (elem && (elem.closest('#intro-hero') || elem.closest('#exhibit-modal') || elem.closest('#directory-drawer') || elem.closest('header') || elem.closest('footer'))) {
+          return;
+        }
+
+        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(puzzleMeshList);
+        if (intersects.length > 0) {
+          const clickedMesh = intersects[0].object;
+          playSynthChime(780, 0.2);
+          openExhibit(clickedMesh.userData.pieceData.id);
+        }
       }
     }
 
@@ -1285,9 +1317,14 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      
+      // Auto-adjust camera distance if window resized
+      if (!isAssembled) {
+        const targetZ = getOptimalCameraDistance();
+        camera.position.z = targetZ;
+      }
     }
 
-    /* Core Render & Animation Loop */
     let clock = new THREE.Clock();
 
     function animate() {
@@ -1296,14 +1333,12 @@
 
       const elapsed = clock.getElapsedTime();
 
-      // Gentle floating animation of individual puzzle pieces
       puzzleMeshList.forEach((mesh) => {
         const offset = mesh.userData.floatOffset;
         mesh.position.y += Math.sin(elapsed * 1.5 + offset) * 0.0008;
         mesh.rotation.z += Math.cos(elapsed * 1.2 + offset) * 0.0004;
       });
 
-      // Subtle particles drift
       if (particlesMesh) {
         particlesMesh.rotation.y = elapsed * 0.02;
       }
@@ -1312,7 +1347,6 @@
       renderer.render(scene, camera);
     }
 
-    /* Auto Orbit Control Functions */
     function toggleOrbitMode() {
       isAutoOrbitEnabled = !isAutoOrbitEnabled;
       updateOrbitUIState();
@@ -1354,9 +1388,9 @@
       hero.style.opacity = '0';
       setTimeout(() => hero.remove(), 1000);
 
-      // Smooth camera transition closer into the structure
+      const targetZ = window.innerWidth < 768 ? Math.max(7.5, getOptimalCameraDistance() * 0.8) : 6.2;
       new TWEEN.Tween(camera.position)
-        .to({ x: 0, y: 0.2, z: 6.2 }, 1500)
+        .to({ x: 0, y: 0.2, z: targetZ }, 1500)
         .easing(TWEEN.Easing.Cubic.InOut)
         .start();
 
@@ -1365,13 +1399,12 @@
 
     function resetCameraView() {
       new TWEEN.Tween(camera.position)
-        .to({ x: 0, y: 0.5, z: 7.8 }, 1000)
+        .to({ x: 0, y: 0.5, z: getOptimalCameraDistance() }, 1000)
         .easing(TWEEN.Easing.Cubic.Out)
         .start();
       controls.target.set(0, 0, 0);
     }
 
-    /* Open Exhibit Modal */
     function openExhibit(pieceId) {
       if (pieceId === 'resume') {
         openResumeModal();
@@ -1384,11 +1417,9 @@
       currentExhibitIndex = pieceIdx;
       const piece = RESUME_DATA.pieces[pieceIdx];
 
-      // Mark visited & update progress
       visitedPieces.add(piece.id);
       updateProgressDisplay();
 
-      // Pull corresponding 3D puzzle mesh forward into locked position
       const targetMesh = puzzleMeshList[pieceIdx];
       if (targetMesh) {
         new TWEEN.Tween(targetMesh.position)
@@ -1405,18 +1436,14 @@
           .start();
       }
 
-      // Populate Modal Content
       document.getElementById('modal-number').textContent = `EXHIBIT 0${pieceIdx + 1} • THE LIVING WORLD`;
       document.getElementById('modal-title').textContent = `${piece.title} — ${piece.sub}`;
       document.getElementById('modal-content-body').innerHTML = piece.contentHtml;
       
-      // Update carousel label
       document.getElementById('carousel-label').textContent = `Piece ${pieceIdx + 1} / 8`;
 
-      // Gently slow down orbit while viewing exhibit
       controls.autoRotateSpeed = 0.25;
 
-      // Show Modal
       const modal = document.getElementById('exhibit-modal');
       const container = document.getElementById('modal-container');
       modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -1426,7 +1453,6 @@
       lucide.createIcons();
       playSynthChime(880, 0.15);
 
-      // Check if all pieces visited
       if (visitedPieces.size === RESUME_DATA.pieces.length && !isAssembled) {
         triggerAssemblyCelebration();
       }
@@ -1439,11 +1465,9 @@
       container.classList.remove('scale-100');
       container.classList.add('scale-95');
 
-      // Restore full orbit speed
       controls.autoRotateSpeed = 0.9;
       controls.autoRotate = isAutoOrbitEnabled;
 
-      // Return mesh to home/assembled grid position
       const currentMesh = puzzleMeshList[currentExhibitIndex];
       if (currentMesh) {
         new TWEEN.Tween(currentMesh.position)
@@ -1471,23 +1495,22 @@
       openExhibit(RESUME_DATA.pieces[nextIdx].id);
     }
 
-    /* Update Discovery Progress */
     function updateProgressDisplay() {
       const total = RESUME_DATA.pieces.length;
       const count = visitedPieces.size;
       const pct = (count / total) * 100;
 
-      document.getElementById('progress-text').textContent = `${count} / ${total} PIECES`;
-      document.getElementById('progress-bar').style.width = `${pct}%`;
+      const progressText = document.getElementById('progress-text');
+      const progressBar = document.getElementById('progress-bar');
+      if (progressText) progressText.textContent = `${count} / ${total} PIECES`;
+      if (progressBar) progressBar.style.width = `${pct}%`;
     }
 
-    /* Assemble All Pieces Into Final Architectural Form */
     function assembleWholePuzzle() {
       isAssembled = true;
       RESUME_DATA.pieces.forEach(p => visitedPieces.add(p.id));
       updateProgressDisplay();
 
-      // Animate each mesh into precise locking coords
       puzzleMeshList.forEach((mesh, i) => {
         new TWEEN.Tween(mesh.position)
           .to(mesh.userData.homePos, 1200 + i * 80)
@@ -1503,9 +1526,9 @@
           .start();
       });
 
-      // Camera majestic orbital zoom
+      const targetZ = window.innerWidth < 768 ? Math.max(8.5, getOptimalCameraDistance() * 0.9) : 7.2;
       new TWEEN.Tween(camera.position)
-        .to({ x: 0, y: 1.2, z: 7.2 }, 1500)
+        .to({ x: 0, y: 1.2, z: targetZ }, 1500)
         .easing(TWEEN.Easing.Cubic.InOut)
         .start();
 
@@ -1525,22 +1548,17 @@
       toast.classList.add('opacity-0', 'pointer-events-none');
     }
 
-    /* Guided Tour */
-    let isTourRunning = false;
-    let tourTimeout = null;
-
     function startGuidedTour() {
-      isTourRunning = true;
       currentExhibitIndex = 0;
       openExhibit(RESUME_DATA.pieces[0].id);
 
-      // Guided tour notification
       const btn = document.getElementById('btn-tour');
-      btn.innerHTML = `<i data-lucide="pause" class="w-3.5 h-3.5 text-amber-400"></i><span>Touring...</span>`;
-      lucide.createIcons();
+      if (btn) {
+        btn.innerHTML = `<i data-lucide="pause" class="w-3.5 h-3.5 text-amber-400"></i><span>Touring...</span>`;
+        lucide.createIcons();
+      }
     }
 
-    /* Directory Drawer */
     function toggleDirectory() {
       const drawer = document.getElementById('directory-drawer');
       const isClosed = drawer.classList.contains('translate-x-full');
@@ -1567,18 +1585,17 @@
       `).join('');
     }
 
-    /* Clean Printable & Downloadable Resume Modal */
     function openResumeModal() {
       document.getElementById('modal-number').textContent = 'PIECE 09 • THE COMPLETE PICTURE';
       document.getElementById('modal-title').textContent = 'Nishitha — Official Resume & Dossier';
       
       document.getElementById('modal-content-body').innerHTML = `
-        <div class="bg-white text-slate-900 p-8 rounded-2xl shadow-2xl font-sans max-w-3xl mx-auto space-y-6 print:p-0">
+        <div class="bg-white text-slate-900 p-5 sm:p-8 rounded-2xl shadow-2xl font-sans max-w-3xl mx-auto space-y-6 print:p-0">
           <!-- Resume Header -->
           <div class="border-b-2 border-slate-900 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 class="font-cinzel text-3xl font-black tracking-wider text-slate-900">NISHITHA</h1>
-              <p class="text-xs font-bold text-slate-700 tracking-wide mt-1 uppercase">Master of Computer Applications (MCA) Candidate | Aspiring Software Developer</p>
+              <h1 class="font-cinzel text-2xl sm:text-3xl font-black tracking-wider text-slate-900">NISHITHA</h1>
+              <p class="text-xs font-bold text-slate-700 tracking-wide mt-1 uppercase">Master of Computer Applications (MCA) Candidate</p>
               <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600 mt-2 font-mono">
                 <span>Byndoor, Karnataka, India</span>
                 <span>•</span>
@@ -1587,7 +1604,7 @@
                 <a href="mailto:nishitha7654@gmail.com" class="text-blue-600 hover:underline">nishitha7654@gmail.com</a>
               </div>
             </div>
-            <div class="w-20 h-20 rounded-xl overflow-hidden border border-slate-300 shadow-sm shrink-0">
+            <div class="w-20 h-20 rounded-xl overflow-hidden border border-slate-300 shadow-sm shrink-0 self-start sm:self-auto">
               <img src="nishitha_1.jpeg" alt="Nishitha" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/150x150/0f172a/ffffff?text=Nishitha';">
             </div>
           </div>
@@ -1702,7 +1719,6 @@
       lucide.createIcons();
     }
 
-    /* Initialize Application on DOM Ready */
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       renderDirectoryItems();
